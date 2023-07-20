@@ -121,6 +121,16 @@ export default function FormModal({
       addresses: addressList,
     }
 
+    customFields.forEach((field) => {
+      if (field.value !== "") {
+        dataObject = {
+          ...dataObject,
+          [field.key]:
+            field.type === "number" ? Number(field.value) : field.value,
+        }
+      }
+    })
+
     await addDoc(collection(db, "patients"), dataObject)
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id)
@@ -187,7 +197,6 @@ export default function FormModal({
         }
       })
     )
-    console.log("handleCustomFieldChange", customFields)
   }
 
   return (
@@ -302,6 +311,13 @@ export default function FormModal({
                 </div>
               </div>
             ))}
+            <Button
+              className="self-end"
+              startIcon={<AddOutlined />}
+              onClick={handleAddAddress}
+            >
+              Add another address
+            </Button>
             <div className="flex flex-col gap-3">
               <DialogContentText>Custom fields (optional)</DialogContentText>
               {customFields.map((col) => (
@@ -316,13 +332,6 @@ export default function FormModal({
                 ></TextField>
               ))}
             </div>
-            <Button
-              className="self-end"
-              startIcon={<AddOutlined />}
-              onClick={handleAddAddress}
-            >
-              Add another address
-            </Button>
           </div>
         </div>
       </DialogContent>

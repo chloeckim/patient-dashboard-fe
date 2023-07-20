@@ -11,7 +11,6 @@ function App() {
 
   useEffect(() => {
     const subscriber = auth.onAuthStateChanged((user: User | null) => {
-      console.log("onAuthStateChanged", user)
       setUser(user)
       if (initializing) setInitializing(false)
     })

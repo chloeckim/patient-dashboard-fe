@@ -124,7 +124,6 @@ export default function Dashboard({ user }: PropsType) {
       setLoading(false)
     })
     const unsubscribeCols = onSnapshot(doc(db, "columns", user.uid), (doc) => {
-      console.log("Columns:", doc.data())
       const newAdditionalCols: ColType[] = [...doc.data()?.columns]
       setCustomCols(newAdditionalCols)
     })
