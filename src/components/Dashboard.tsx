@@ -16,9 +16,9 @@ import {
   GridColDef,
   GridToolbar,
 } from "@mui/x-data-grid"
-import FormModal from "./FormModal"
 import { Delete, Edit } from "@mui/icons-material"
 import ColumnModal from "./ColumnModal"
+import CreateModal from "./CreateModal"
 
 type PropsType = {
   user: User
@@ -31,9 +31,16 @@ export type ColType = {
 }
 
 export default function Dashboard({ user }: PropsType) {
-  const [modalOpen, setModalOpen] = useState<boolean>(false)
-  const [columnModalOpen, setColumnModalOpen] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
+
+  const [modalName, setModalName] = useState<string>("")
+  const openModal = (thisModalName: string) => {
+    setModalName(thisModalName)
+  }
+  const closeModal = () => {
+    setModalName("")
+  }
+
   const [customCols, setCustomCols] = useState<ColType[]>([])
   const [rows, setRows] = useState([{}])
 
@@ -85,22 +92,6 @@ export default function Dashboard({ user }: PropsType) {
     ]
   }, [customCols])
 
-  const handleClickOpen = () => {
-    setModalOpen(true)
-  }
-
-  const handleClose = () => {
-    setModalOpen(false)
-  }
-
-  const handleColumnModalOpen = () => {
-    setColumnModalOpen(true)
-  }
-
-  const handleColumnModalClose = () => {
-    setColumnModalOpen(false)
-  }
-
   const handleDeletePatient = async (docId: string) => {
     // TODO: Maybe add an alert dialog since this is a final action.
     await deleteDoc(doc(db, "patients", docId))
@@ -139,22 +130,26 @@ export default function Dashboard({ user }: PropsType) {
     </div>
   ) : (
     <>
-      <FormModal
-        modalOpen={modalOpen}
-        handleClose={handleClose}
+      <CreateModal
+        modalOpen={modalName === "create-modal"}
+        closeModalFn={closeModal}
         user={user}
         customCols={customCols}
       />
       <ColumnModal
-        modalOpen={columnModalOpen}
-        handleClose={handleColumnModalClose}
+        modalOpen={modalName === "column-modal"}
+        closeModalFn={closeModal}
         user={user}
         customCols={customCols}
       />
       <Container maxWidth="lg" className="mt-10">
         <div className="flex flex-row gap-4 justify-end mb-4">
-          <Button onClick={handleClickOpen}>Add a new patient</Button>
-          <Button onClick={handleColumnModalOpen}>Manage custom columns</Button>
+          <Button onClick={() => openModal("create-modal")}>
+            Add a new patient
+          </Button>
+          <Button onClick={() => openModal("column-modal")}>
+            Manage custom columns
+          </Button>
         </div>
         <Box sx={{ height: 350, wdith: "100%" }}>
           <DataGrid

@@ -19,7 +19,7 @@ import { db } from "../config/firebase"
 
 type PropsType = {
   modalOpen: boolean
-  handleClose: () => void
+  closeModalFn: () => void
   user: User
   customCols: ColType[]
 }
@@ -33,7 +33,7 @@ type EditableColType = {
 
 export default function ColumnModal({
   modalOpen,
-  handleClose,
+  closeModalFn,
   user,
   customCols,
 }: PropsType) {
@@ -141,7 +141,7 @@ export default function ColumnModal({
   }
 
   return (
-    <Dialog open={modalOpen} onClose={handleClose}>
+    <Dialog open={modalOpen} onClose={closeModalFn}>
       <DialogTitle>Manage custom columns</DialogTitle>
       <DialogContent>
         <div className="flex flex-col gap-4 mt-6">
@@ -202,7 +202,7 @@ export default function ColumnModal({
         <Button
           variant="outlined"
           onClick={() => {
-            handleClose()
+            closeModalFn()
             resetCols()
           }}
         >
@@ -213,7 +213,7 @@ export default function ColumnModal({
           onClick={() => {
             // Send back to the backend first
             handleSubmit()
-            handleClose()
+            closeModalFn()
             resetCols()
           }}
         >

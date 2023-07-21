@@ -1,12 +1,5 @@
 import React from "react"
-import {
-  AppBar,
-  Avatar,
-  Button,
-  Container,
-  Toolbar,
-  Typography,
-} from "@mui/material"
+import { AppBar, Avatar, Button, Container, Toolbar } from "@mui/material"
 import { signInWithGoogle, logOut } from "../auth/auth-google"
 import { User } from "firebase/auth"
 
@@ -18,7 +11,6 @@ export default function NavBar({ user }: PropsType) {
   return (
     <AppBar position="static" color="default" elevation={0}>
       <Container maxWidth="lg">
-        {/* Add photo url for the profile icon  */}
         <Toolbar disableGutters className="flex flex-row justify-between">
           <a href="/" className="font-mono font-bold text-xl">
             Patient Dashboard

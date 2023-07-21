@@ -22,7 +22,7 @@ import { ColType } from "./Dashboard"
 
 type PropsType = {
   modalOpen: boolean
-  handleClose: () => void
+  closeModalFn: () => void
   user: User
   customCols: ColType[]
 }
@@ -50,9 +50,9 @@ const initialAddress = {
   zipcode: "",
 }
 
-export default function FormModal({
+export default function CreateModal({
   modalOpen,
-  handleClose,
+  closeModalFn,
   user,
   customCols,
 }: PropsType) {
@@ -203,7 +203,7 @@ export default function FormModal({
     <Dialog
       open={modalOpen}
       onClose={() => {
-        handleClose()
+        closeModalFn()
         resetInputs()
       }}
     >
@@ -340,7 +340,7 @@ export default function FormModal({
           variant="outlined"
           onClick={() => {
             resetInputs()
-            handleClose()
+            closeModalFn()
           }}
         >
           Cancel
@@ -350,7 +350,7 @@ export default function FormModal({
           onClick={() => {
             handleSubmit()
             resetInputs()
-            handleClose()
+            closeModalFn()
           }}
         >
           Submit
