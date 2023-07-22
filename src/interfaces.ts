@@ -6,7 +6,7 @@ export type DocType = {
   firstName: string
   middleName?: string
   lastName: string
-  dob: Timestamp
+  dob?: Timestamp
   addresses: AddressType[]
 }
 
@@ -17,6 +17,7 @@ export type ColType = {
 }
 
 export type AddressType = {
+  primary?: boolean
   addressLine1: string
   addressLine2?: string
   city: string

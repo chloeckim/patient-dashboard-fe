@@ -71,6 +71,7 @@ export default function SampleDataGenerator({ user }: PropsType) {
           data.forEach((value: string, index: number) => {
             const parsedAddress = parseAddress(value)
             if (index < docs.length && parsedAddress !== null) {
+              parsedAddress.primary = true
               docs[index].addresses = [parsedAddress]
             }
           })

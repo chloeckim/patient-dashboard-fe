@@ -28,11 +28,28 @@ import SampleDataGenerator from "./SampleDataGenerator"
 import { formatDateToString } from "../util/date"
 import AddressCell from "./AddressCell"
 import { StatusChip } from "./StatusChip"
-import { AddressType, ColType } from "../interfaces"
+import { AddressType, ColType, DocType } from "../interfaces"
+import { EditModal } from "./ EditModal"
 
 type PropsType = {
   user: User
 }
+
+const initialDoc: DocType = {
+  uid: "",
+  status: "Inquiry",
+  firstName: "Chloe",
+  lastName: "Kim",
+  addresses: [
+    // {
+    //   addressLine1: "",
+    //   city: "",
+    //   state: "",
+    //   zipcode: "",
+    // },
+  ],
+}
+
 export default function Dashboard({ user }: PropsType) {
   const [loading, setLoading] = useState<boolean>(true)
   const [editing, setEditing] = useState<boolean>(false)
@@ -185,6 +202,7 @@ export default function Dashboard({ user }: PropsType) {
             Manage custom columns
           </Button>
           <SampleDataGenerator user={user} />
+          <Button onClick={() => openModal("edit-modal")}>Test</Button>
         </div>
         <Box sx={{ height: 350, wdith: "100%" }}>
           <DataGrid
@@ -240,6 +258,14 @@ export default function Dashboard({ user }: PropsType) {
         modalOpen={modalName === "column-modal"}
         closeModalFn={closeModal}
         user={user}
+        customCols={customCols}
+      />
+      <EditModal
+        modalOpen={modalName === "edit-modal"}
+        closeModalFn={closeModal}
+        actionType="create"
+        user={user}
+        initialDoc={initialDoc}
         customCols={customCols}
       />
     </>

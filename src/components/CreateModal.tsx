@@ -43,6 +43,7 @@ const initialValues = {
 }
 
 const initialAddress: AddressType = {
+  primary: true,
   addressLine1: "",
   addressLine2: "",
   city: "",
@@ -209,7 +210,7 @@ export default function CreateModal({
     >
       <DialogTitle>Add a new patient</DialogTitle>
       <DialogContent>
-        <div className="flex flex-col gap-3 mt-4">
+        <div className="flex flex-col gap-4 mt-4">
           <DialogContentText>Required fields</DialogContentText>
           <div className="flex flex-row gap-2">
             <TextField
@@ -218,12 +219,14 @@ export default function CreateModal({
               label="First Name"
               value={values.firstName}
               onChange={handleInputChange}
+              size="small"
             />
             <TextField
               name="middleName"
               label="Middle Name"
               onChange={handleInputChange}
               value={values.middleName}
+              size="small"
             />
             <TextField
               required
@@ -231,6 +234,7 @@ export default function CreateModal({
               label="Last Name"
               onChange={handleInputChange}
               value={values.lastName}
+              size="small"
             />
           </div>
           <div>

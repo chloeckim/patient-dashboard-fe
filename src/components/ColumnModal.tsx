@@ -141,7 +141,7 @@ export default function ColumnModal({
   }
 
   return (
-    <Dialog open={modalOpen} onClose={closeModalFn}>
+    <Dialog open={modalOpen} onClose={closeModalFn} fullWidth>
       <DialogTitle>Manage custom columns</DialogTitle>
       <DialogContent>
         <div className="flex flex-col gap-4 mt-6">
