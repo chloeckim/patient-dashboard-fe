@@ -1,8 +1,9 @@
-import { FmdGood, PlaceOutlined } from "@mui/icons-material"
-import { AddressType, stateShorthand, stringifyAddress } from "../util/address"
+import { FmdGood } from "@mui/icons-material"
+import { stateShorthand, stringifyAddress } from "../util/address"
 import { IconButton, Popover, Stack, Typography } from "@mui/material"
 import { GridRowId } from "@mui/x-data-grid"
 import { useState } from "react"
+import { AddressType } from "../interfaces"
 
 type PropsType = {
   addressList: AddressType[]
@@ -34,9 +35,11 @@ export default function AddressCell({ addressList, rowId }: PropsType) {
           onMouseEnter={handlePopoverOpen}
           onMouseLeave={handlePopoverClose}
         >
+          {/* <Badge badgeContent={addressList.length} color="default"> */}
           <IconButton color="primary" size="small">
             <FmdGood fontSize="inherit" />
           </IconButton>
+          {/* </Badge> */}
         </div>
         <Stack>
           <Typography variant="body2">{addressList[0].city}</Typography>
@@ -64,14 +67,23 @@ export default function AddressCell({ addressList, rowId }: PropsType) {
         onClose={handlePopoverClose}
         disableRestoreFocus
       >
-        <div className="flex flex-col px-4 py-3">
-          <Typography
+        <div className="flex flex-col px-4 py-3 gap-4">
+          {addressList.map((address: AddressType, index: number) => (
+            <Typography
+              whiteSpace="break-spaces"
+              variant="body2"
+              lineHeight="1.5rem"
+            >
+              {stringifyAddress(address)}
+            </Typography>
+          ))}
+          {/* <Typography
             whiteSpace="break-spaces"
             variant="body2"
             lineHeight="1.5rem"
           >
             {stringifyAddress(addressList[0])}
-          </Typography>
+          </Typography> */}
         </div>
       </Popover>
     </div>

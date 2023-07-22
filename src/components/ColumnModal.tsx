@@ -11,11 +11,11 @@ import {
   TextField,
 } from "@mui/material"
 import { User } from "firebase/auth"
-import { ColType } from "./Dashboard"
 import { AddOutlined, Check, Delete, Edit } from "@mui/icons-material"
 import { useEffect, useState } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { db } from "../config/firebase"
+import { ColType } from "../interfaces"
 
 type PropsType = {
   modalOpen: boolean

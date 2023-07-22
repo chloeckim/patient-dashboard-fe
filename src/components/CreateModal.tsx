@@ -18,8 +18,7 @@ import { db } from "../config/firebase"
 import { User } from "firebase/auth"
 import React, { useEffect, useState } from "react"
 import { AddOutlined } from "@mui/icons-material"
-import { ColType } from "./Dashboard"
-import { AddressType } from "../util/address"
+import { ColType, AddressType } from "../interfaces"
 
 type PropsType = {
   modalOpen: boolean

@@ -26,22 +26,16 @@ import ColumnModal from "./ColumnModal"
 import CreateModal from "./CreateModal"
 import SampleDataGenerator from "./SampleDataGenerator"
 import { formatDateToString } from "../util/date"
-import { AddressType } from "../util/address"
 import AddressCell from "./AddressCell"
 import { StatusChip } from "./StatusChip"
+import { AddressType, ColType } from "../interfaces"
 
 type PropsType = {
   user: User
 }
-
-export type ColType = {
-  key: string
-  name: string
-  type: string
-}
-
 export default function Dashboard({ user }: PropsType) {
   const [loading, setLoading] = useState<boolean>(true)
+  const [editing, setEditing] = useState<boolean>(false)
 
   const [modalName, setModalName] = useState<string>("")
   const openModal = (thisModalName: string) => {
@@ -119,6 +113,7 @@ export default function Dashboard({ user }: PropsType) {
             onClick={() => {
               handleDeletePatient(params.row.id)
             }}
+            disabled={editing}
           />,
         ],
         align: "right",
@@ -142,9 +137,11 @@ export default function Dashboard({ user }: PropsType) {
   }
   const handleDeletePatient = async (docId: string) => {
     // TODO: Maybe add an alert dialog since this is a final action.
+    setEditing(true)
     await deleteDoc(doc(db, "patients", docId))
       .then(() => {
         console.log("Deleted", docId)
+        setEditing(false)
       })
       .catch((error) => {
         console.error(error)

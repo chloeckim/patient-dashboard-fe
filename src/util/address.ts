@@ -1,10 +1,4 @@
-export type AddressType = {
-  addressLine1: string
-  addressLine2?: string
-  city: string
-  state: string
-  zipcode: string
-}
+import { AddressType } from "../interfaces"
 
 const STATES: Record<string, string> = {
   alabama: "AL",

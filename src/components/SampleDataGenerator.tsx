@@ -2,17 +2,8 @@ import { Button } from "@mui/material"
 import { Timestamp, collection, doc, writeBatch } from "firebase/firestore"
 import { User } from "firebase/auth"
 import { db } from "../config/firebase"
-import { AddressType, parseAddress } from "../util/address"
-
-type DocType = {
-  uid: string
-  status: string
-  firstName: string
-  middleName?: string
-  lastName: string
-  dob: Timestamp
-  addresses: AddressType[]
-}
+import { parseAddress } from "../util/address"
+import { DocType } from "../interfaces"
 
 type PropsType = {
   user: User
