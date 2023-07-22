@@ -19,6 +19,7 @@ import { User } from "firebase/auth"
 import React, { useEffect, useState } from "react"
 import { AddOutlined } from "@mui/icons-material"
 import { ColType } from "./Dashboard"
+import { AddressType } from "../util/address"
 
 type PropsType = {
   modalOpen: boolean
@@ -42,9 +43,9 @@ const initialValues = {
   status: "",
 }
 
-const initialAddress = {
-  street: "",
-  street2: "",
+const initialAddress: AddressType = {
+  addressLine1: "",
+  addressLine2: "",
   city: "",
   state: "",
   zipcode: "",
@@ -100,7 +101,7 @@ export default function CreateModal({
     addressList.forEach((address) => {
       validated =
         validated &&
-        address.street !== "" &&
+        address.addressLine2 !== "" &&
         address.city !== "" &&
         address.state !== "" &&
         address.zipcode !== ""
@@ -114,7 +115,7 @@ export default function CreateModal({
       return
     }
     let dobDate = dob?.toDate() || new Date()
-    let dataObject = {
+    let doc = {
       uid: user.uid,
       ...values,
       dob: Timestamp.fromDate(dobDate),
@@ -123,15 +124,15 @@ export default function CreateModal({
 
     customFields.forEach((field) => {
       if (field.value !== "") {
-        dataObject = {
-          ...dataObject,
+        doc = {
+          ...doc,
           [field.key]:
             field.type === "number" ? Number(field.value) : field.value,
         }
       }
     })
 
-    await addDoc(collection(db, "patients"), dataObject)
+    await addDoc(collection(db, "patients"), doc)
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id)
       })
@@ -265,17 +266,17 @@ export default function CreateModal({
                 <InputLabel>Address {index + 1} *</InputLabel>
                 <TextField
                   required
-                  name="street"
+                  name="addressLine1"
                   label="Street Address"
-                  value={address.street}
+                  value={address.addressLine1}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                     handleAddressChange(event, index)
                   }}
                 />
                 <TextField
-                  name="street2"
+                  name="addressLine2"
                   label="Street Address 2"
-                  value={address.street2}
+                  value={address.addressLine2}
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                     handleAddressChange(event, index)
                   }}

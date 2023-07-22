@@ -19,6 +19,7 @@ import {
 import { Delete, Edit } from "@mui/icons-material"
 import ColumnModal from "./ColumnModal"
 import CreateModal from "./CreateModal"
+import SampleDataGenerator from "./SampleDataGenerator"
 
 type PropsType = {
   user: User
@@ -130,18 +131,6 @@ export default function Dashboard({ user }: PropsType) {
     </div>
   ) : (
     <>
-      <CreateModal
-        modalOpen={modalName === "create-modal"}
-        closeModalFn={closeModal}
-        user={user}
-        customCols={customCols}
-      />
-      <ColumnModal
-        modalOpen={modalName === "column-modal"}
-        closeModalFn={closeModal}
-        user={user}
-        customCols={customCols}
-      />
       <Container maxWidth="lg" className="mt-10">
         <div className="flex flex-row gap-4 justify-end mb-4">
           <Button onClick={() => openModal("create-modal")}>
@@ -150,6 +139,7 @@ export default function Dashboard({ user }: PropsType) {
           <Button onClick={() => openModal("column-modal")}>
             Manage custom columns
           </Button>
+          <SampleDataGenerator user={user} />
         </div>
         <Box sx={{ height: 350, wdith: "100%" }}>
           <DataGrid
@@ -186,6 +176,18 @@ export default function Dashboard({ user }: PropsType) {
           ></DataGrid>
         </Box>
       </Container>
+      <CreateModal
+        modalOpen={modalName === "create-modal"}
+        closeModalFn={closeModal}
+        user={user}
+        customCols={customCols}
+      />
+      <ColumnModal
+        modalOpen={modalName === "column-modal"}
+        closeModalFn={closeModal}
+        user={user}
+        customCols={customCols}
+      />
     </>
   )
 }
