@@ -1,12 +1,5 @@
 import { User } from "firebase/auth"
-import {
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Container,
-  Stack,
-} from "@mui/material"
+import { Box, Button, CircularProgress, Container } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { db } from "../config/firebase"
 import {
@@ -22,7 +15,6 @@ import {
   GridActionsCellItem,
   GridColDef,
   GridRenderCellParams,
-  GridToolbar,
   GridToolbarColumnsButton,
   GridToolbarContainer,
   GridToolbarFilterButton,
@@ -36,6 +28,7 @@ import SampleDataGenerator from "./SampleDataGenerator"
 import { formatDateToString } from "../util/date"
 import { AddressType } from "../util/address"
 import AddressCell from "./AddressCell"
+import { StatusChip } from "./StatusChip"
 
 type PropsType = {
   user: User
@@ -93,8 +86,8 @@ export default function Dashboard({ user }: PropsType) {
       {
         field: "status",
         headerName: "Status *",
-        renderCell: (params) => <Chip label={params.value} size="small" />,
-        width: 110,
+        renderCell: (params) => <StatusChip status={params.value} />,
+        width: 140,
       },
       {
         field: "addresses",
@@ -136,11 +129,15 @@ export default function Dashboard({ user }: PropsType) {
 
   const CustomToolbar = () => {
     return (
-      <GridToolbarContainer>
-        <GridToolbarColumnsButton />
-        <GridToolbarFilterButton />
-        <GridToolbarQuickFilter />
-      </GridToolbarContainer>
+      <div className="bg-sky-50 p-4">
+        <GridToolbarContainer className="flex flex-row justify-between">
+          <div>
+            <GridToolbarColumnsButton />
+            <GridToolbarFilterButton />
+          </div>
+          <GridToolbarQuickFilter />
+        </GridToolbarContainer>
+      </div>
     )
   }
   const handleDeletePatient = async (docId: string) => {
