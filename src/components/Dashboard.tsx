@@ -23,6 +23,10 @@ import {
   GridColDef,
   GridRenderCellParams,
   GridToolbar,
+  GridToolbarColumnsButton,
+  GridToolbarContainer,
+  GridToolbarFilterButton,
+  GridToolbarQuickFilter,
   GridValueFormatterParams,
 } from "@mui/x-data-grid"
 import { Delete, Edit } from "@mui/icons-material"
@@ -84,21 +88,21 @@ export default function Dashboard({ user }: PropsType) {
           }
           return `${formatDateToString(params.value)}`
         },
-        width: 100,
+        width: 130,
       },
       {
         field: "status",
         headerName: "Status *",
-        renderCell: (params) => <Chip label={params.value} />,
-        width: 130,
+        renderCell: (params) => <Chip label={params.value} size="small" />,
+        width: 110,
       },
       {
         field: "addresses",
         headerName: "Address *",
         renderCell: (params: GridRenderCellParams<AddressType[]>) => (
-          <AddressCell addressList={params.value} />
+          <AddressCell addressList={params.value} rowId={params.id} />
         ),
-        width: 130,
+        flex: 1,
       },
       ...customCols.map((column: ColType) => ({
         field: column.key,
@@ -130,6 +134,15 @@ export default function Dashboard({ user }: PropsType) {
     ]
   }, [customCols])
 
+  const CustomToolbar = () => {
+    return (
+      <GridToolbarContainer>
+        <GridToolbarColumnsButton />
+        <GridToolbarFilterButton />
+        <GridToolbarQuickFilter />
+      </GridToolbarContainer>
+    )
+  }
   const handleDeletePatient = async (docId: string) => {
     // TODO: Maybe add an alert dialog since this is a final action.
     await deleteDoc(doc(db, "patients", docId))
@@ -191,6 +204,7 @@ export default function Dashboard({ user }: PropsType) {
             }}
             rows={rows}
             columns={columns}
+            density="comfortable"
             initialState={{
               pagination: {
                 paginationModel: {
@@ -209,7 +223,7 @@ export default function Dashboard({ user }: PropsType) {
             pageSizeOptions={[10, 25, 50, 100]}
             // checkboxSelection
             disableRowSelectionOnClick
-            slots={{ toolbar: GridToolbar }}
+            slots={{ toolbar: CustomToolbar }}
             slotProps={{
               toolbar: {
                 showQuickFilter: true,

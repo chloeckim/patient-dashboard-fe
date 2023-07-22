@@ -1,5 +1,12 @@
 import React from "react"
-import { AppBar, Avatar, Button, Container, Toolbar } from "@mui/material"
+import {
+  AppBar,
+  Avatar,
+  Button,
+  Container,
+  Toolbar,
+  Typography,
+} from "@mui/material"
 import { signInWithGoogle, logOut } from "../auth/auth-google"
 import { User } from "firebase/auth"
 
@@ -12,8 +19,10 @@ export default function NavBar({ user }: PropsType) {
     <AppBar position="static" color="default" elevation={0}>
       <Container maxWidth="lg">
         <Toolbar disableGutters className="flex flex-row justify-between">
-          <a href="/" className="font-mono font-bold text-xl">
-            Patient Dashboard
+          <a href="/" className="font-bold text-xl">
+            <Typography variant="h6" letterSpacing={0}>
+              Patient Dashboard
+            </Typography>
           </a>
           {user === null ? (
             <Button
