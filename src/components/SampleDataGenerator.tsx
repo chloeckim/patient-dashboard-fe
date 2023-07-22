@@ -101,5 +101,5 @@ export default function SampleDataGenerator({ user }: PropsType) {
         console.log("batch update error: ", error)
       })
   }
-  return <Button onClick={populateSampleData}>Add sample data</Button>
+  return <Button onClick={populateSampleData}>Populate sample data</Button>
 }

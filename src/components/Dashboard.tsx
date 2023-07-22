@@ -1,5 +1,12 @@
 import { User } from "firebase/auth"
-import { Box, Button, CircularProgress, Container, Stack } from "@mui/material"
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Container,
+  Stack,
+} from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { db } from "../config/firebase"
 import {
@@ -14,12 +21,17 @@ import {
   DataGrid,
   GridActionsCellItem,
   GridColDef,
+  GridRenderCellParams,
   GridToolbar,
+  GridValueFormatterParams,
 } from "@mui/x-data-grid"
 import { Delete, Edit } from "@mui/icons-material"
 import ColumnModal from "./ColumnModal"
 import CreateModal from "./CreateModal"
 import SampleDataGenerator from "./SampleDataGenerator"
+import { formatDateToString } from "../util/date"
+import { AddressType } from "../util/address"
+import AddressCell from "./AddressCell"
 
 type PropsType = {
   user: User
@@ -50,19 +62,44 @@ export default function Dashboard({ user }: PropsType) {
       {
         field: "fullName",
         headerName: "Full Name *",
+        headerClassName: "app--table-header-class",
+        // cellClassName
         valueGetter: (params) => {
           return `${params.row.firstName || ""} ${
             params.row.middleName || ""
           } ${params.row.lastName || ""}`
         },
-        width: 130,
+        width: 150,
       },
       { field: "firstName", headerName: "First Name *", width: 130 },
       { field: "middleName", headerName: "Middle Name", width: 130 },
       { field: "lastName", headerName: "Last Name *", width: 130 },
-      { field: "dob", headerName: "Date of Birth *", type: "date", width: 130 },
-      { field: "status", headerName: "Status *", width: 130 },
-      { field: "address", headerName: "Address *", width: 130 },
+      {
+        field: "dob",
+        headerName: "Date of Birth *",
+        type: "date",
+        valueFormatter: (params: GridValueFormatterParams<Date>) => {
+          if (params.value === null) {
+            return ""
+          }
+          return `${formatDateToString(params.value)}`
+        },
+        width: 100,
+      },
+      {
+        field: "status",
+        headerName: "Status *",
+        renderCell: (params) => <Chip label={params.value} />,
+        width: 130,
+      },
+      {
+        field: "addresses",
+        headerName: "Address *",
+        renderCell: (params: GridRenderCellParams<AddressType[]>) => (
+          <AddressCell addressList={params.value} />
+        ),
+        width: 130,
+      },
       ...customCols.map((column: ColType) => ({
         field: column.key,
         headerName: column.name,
@@ -107,12 +144,13 @@ export default function Dashboard({ user }: PropsType) {
   useEffect(() => {
     const q = query(collection(db, "patients"), where("uid", "==", user.uid))
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const patients = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        dob: doc.data().dob?.toDate(),
-        id: doc.id,
-      }))
-      setRows(patients)
+      setRows(
+        querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+          dob: doc.data().dob?.toDate(),
+          id: doc.id,
+        }))
+      )
       setLoading(false)
     })
     const unsubscribeCols = onSnapshot(doc(db, "columns", user.uid), (doc) => {
@@ -143,6 +181,14 @@ export default function Dashboard({ user }: PropsType) {
         </div>
         <Box sx={{ height: 350, wdith: "100%" }}>
           <DataGrid
+            sx={{
+              // boxShadow: 2,
+              // border: 2,
+              // borderColor: 'primary.light',
+              "& .MuiDataGrid-cell:hover": {
+                color: "primary.main",
+              },
+            }}
             rows={rows}
             columns={columns}
             initialState={{
@@ -161,7 +207,7 @@ export default function Dashboard({ user }: PropsType) {
               },
             }}
             pageSizeOptions={[10, 25, 50, 100]}
-            checkboxSelection
+            // checkboxSelection
             disableRowSelectionOnClick
             slots={{ toolbar: GridToolbar }}
             slotProps={{
