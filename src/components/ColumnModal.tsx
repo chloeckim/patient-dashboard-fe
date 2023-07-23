@@ -1,7 +1,6 @@
 import {
   Button,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
@@ -15,14 +14,7 @@ import {
   Typography,
 } from "@mui/material"
 import { User } from "firebase/auth"
-import {
-  AddOutlined,
-  Check,
-  Delete,
-  Edit,
-  RemoveCircle,
-  RemoveCircleOutline,
-} from "@mui/icons-material"
+import { AddOutlined, RemoveCircle } from "@mui/icons-material"
 import { useEffect, useState } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { db } from "../config/firebase"

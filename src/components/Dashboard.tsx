@@ -16,6 +16,7 @@ import {
   GridColDef,
   GridRenderCellParams,
   GridValueFormatterParams,
+  GridValueGetterParams,
 } from "@mui/x-data-grid"
 import { Edit, ListAlt, MoreVert } from "@mui/icons-material"
 import ColumnModal from "./ColumnModal"
@@ -32,6 +33,7 @@ import {
 } from "../interfaces"
 import { EditModal } from "./ EditModal"
 import { TableToolbar } from "./TableToolbar"
+import { stateShorthand } from "../util/address"
 
 type PropsType = {
   user: User
@@ -166,23 +168,69 @@ export default function Dashboard({ user }: PropsType) {
         minWidth: 200,
       },
       {
+        field: "city",
+        headerName: "City",
+        valueGetter: ({ row }) => {
+          if (!row.addresses) {
+            return null
+          }
+          return row.addresses.length > 0 ? row.addresses[0].city : null
+        },
+        width: 130,
+      },
+      {
+        field: "state",
+        headerName: "State",
+        valueGetter: ({ row }) => {
+          if (!row.addresses) {
+            return null
+          }
+          return row.addresses.length > 0
+            ? stateShorthand(row.addresses[0].state)
+            : null
+        },
+        width: 130,
+      },
+      {
+        field: "zipcode",
+        headerName: "Zip Code",
+        valueGetter: ({ row }) => {
+          if (!row.addresses) {
+            return null
+          }
+          return row.addresses.length > 0 ? row.addresses[0].zipcode : null
+        },
+        width: 130,
+      },
+      {
         field: "customForm",
-        headerName: "Form",
-        renderCell: () => (
-          <IconButton>
-            <ListAlt />
-          </IconButton>
-        ),
-        width: 100,
+        headerName: "Custom Fields",
+        type: "boolean",
+        valueGetter: (params) => {
+          return "customFields" in params.row
+        },
+        renderCell: (params) =>
+          params.value === true ? (
+            <IconButton>
+              <ListAlt />
+            </IconButton>
+          ) : (
+            <></>
+          ),
+        width: 140,
         align: "center",
         headerAlign: "center",
       },
-      ...customCols.map((column: ColType) => ({
-        field: column.key,
-        headerName: column.name,
-        width: 130,
-        type: column.type,
-      })),
+      // ...customCols.map((column: ColType) : GridColDef => ({
+      //   field: column.key,
+      //   valueGetter: (params) => {
+      //     // Get the value from params.row.customFields
+      //     return params.row.customFields?[column.key]
+      //   },
+      //   headerName: column.name,
+      //   width: 130,
+      //   type: column.type,
+      // })),
     ]
   }, [customCols])
 
@@ -221,6 +269,9 @@ export default function Dashboard({ user }: PropsType) {
                   firstName: false,
                   middleName: false,
                   lastName: false,
+                  city: false,
+                  state: false,
+                  zipcode: false,
                 },
               },
             }}

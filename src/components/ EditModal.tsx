@@ -1,6 +1,7 @@
 import { User } from "firebase/auth"
 import {
   AddressType,
+  CUSTOM_FIELDS_KEY,
   ColType,
   ColWithValueType,
   DocType,
@@ -157,21 +158,26 @@ export function EditModal({
 
   const handleSubmit = async () => {
     let combinedDocObj = { ...docObj }
-
-    optionalCols.forEach((col: ColWithValueType) => {
-      if (col.value !== undefined) {
-        Object.defineProperty(combinedDocObj, col.colDef.key, {
-          value:
-            col.colDef.type === "number"
-              ? Number(col.value)
-              : String(col.value),
-          configurable: true,
-          enumerable: true,
-          writable: true,
-        })
+    if (optionalCols.length > 0) {
+      let optionals: Record<string, string | number> = {}
+      for (let i = 0; i < optionalCols.length; i++) {
+        const col = optionalCols[i]
+        if (col.value !== undefined) {
+          optionals[col.colDef.key] =
+            col.colDef.type === "number" ? Number(col.value) : String(col.value)
+        }
       }
-      console.log(combinedDocObj)
-    })
+      console.log(optionals)
+
+      Object.defineProperty(combinedDocObj, CUSTOM_FIELDS_KEY, {
+        value: optionals,
+        configurable: true,
+        enumerable: true,
+        writable: true,
+      })
+    }
+
+    console.log(combinedDocObj)
 
     if (row === null) {
       await addDoc(collection(db, "patients"), combinedDocObj)
@@ -326,7 +332,7 @@ export function EditModal({
           {/* Custom (Optional) fields section  */}
           {optionalCols.length > 0 && (
             <Grid item xs={3}>
-              <Typography fontWeight="bold">Optional fields</Typography>
+              <Typography fontWeight="bold">Custom fields</Typography>
             </Grid>
           )}
           <Grid item xs={9}>

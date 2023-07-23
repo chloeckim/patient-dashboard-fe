@@ -75,3 +75,4 @@ export const toDoc = (row: RowType): DocType => {
 
 export const EDIT_MODAL_NAME = "edit-modal"
 export const COLUMN_MODAL_NAME = "column-modal"
+export const CUSTOM_FIELDS_KEY = "customFields"
