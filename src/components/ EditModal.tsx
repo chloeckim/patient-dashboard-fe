@@ -325,6 +325,7 @@ export function EditModal({
                     key={`text-input-${col.colDef.key}`}
                     label={col.colDef.name}
                     value={col.value}
+                    size="small"
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                       handleOptionalFieldChange(
                         col.colDef.key,
