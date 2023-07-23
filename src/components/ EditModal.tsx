@@ -314,7 +314,7 @@ export function EditModal({
                 </Grid>
                 <Button
                   startIcon={<AddOutlined />}
-                  className=" self-start"
+                  className="self-start"
                   onClick={addAddress}
                 >
                   Add address
