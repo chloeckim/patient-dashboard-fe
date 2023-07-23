@@ -70,7 +70,7 @@ export default function AddressCell({ addressList, rowId }: PropsType) {
         disableRestoreFocus
       >
         <div className="flex flex-col px-4 py-3 gap-4">
-          {addressList.map((address: AddressType, index: number) => (
+          {addressList.map((address: AddressType) => (
             <Typography
               whiteSpace="break-spaces"
               variant="body2"
@@ -79,13 +79,6 @@ export default function AddressCell({ addressList, rowId }: PropsType) {
               {stringifyAddress(address)}
             </Typography>
           ))}
-          {/* <Typography
-            whiteSpace="break-spaces"
-            variant="body2"
-            lineHeight="1.5rem"
-          >
-            {stringifyAddress(addressList[0])}
-          </Typography> */}
         </div>
       </Popover>
     </div>

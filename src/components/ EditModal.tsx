@@ -111,6 +111,7 @@ export function EditModal({
   }
 
   const setAddress = (newAddress: AddressType | null, index: number): void => {
+    console.log(newAddress)
     if (newAddress === null) {
       setDocObj({
         ...docObj,
@@ -122,8 +123,16 @@ export function EditModal({
       setDocObj({
         ...docObj,
         addresses: docObj.addresses.map(
-          (address: AddressType, index_: number) =>
-            index === index_ ? { ...newAddress, editing: undefined } : address
+          (address: AddressType, index_: number): AddressType =>
+            index === index_
+              ? {
+                  addressLine1: newAddress.addressLine1,
+                  addressLine2: newAddress.addressLine2 || "",
+                  city: newAddress.city,
+                  state: newAddress.state,
+                  zipcode: newAddress.zipcode,
+                }
+              : address
         ),
       })
     }
@@ -151,6 +160,7 @@ export function EditModal({
           writable: true,
         })
       }
+      console.log(combinedDocObj)
     })
 
     if (row === null) {
