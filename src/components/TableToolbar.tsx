@@ -7,6 +7,7 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Typography,
 } from "@mui/material"
 import {
   GridToolbarContainer,
@@ -39,6 +40,7 @@ export function TableToolbar({
     <div className="bg-sky-50 p-4">
       <GridToolbarContainer className="flex flex-row justify-between">
         <Stack direction="row" spacing={2}>
+          <GridToolbarQuickFilter />
           <GridToolbarColumnsButton />
           <GridToolbarFilterButton />
         </Stack>
@@ -79,7 +81,6 @@ export function TableToolbar({
             <MenuItem value="xl">extra large</MenuItem>
           </Select>
         </FormControl>
-        <GridToolbarQuickFilter />
       </GridToolbarContainer>
     </div>
   )

@@ -16,9 +16,9 @@ type PropsType = {
 
 export default function NavBar({ user }: PropsType) {
   return (
-    <AppBar position="static" color="default" elevation={0}>
+    <AppBar position="static" color="transparent" elevation={0}>
       <Container maxWidth="lg">
-        <Toolbar disableGutters className="flex flex-row justify-between">
+        <Toolbar disableGutters className="flex flex-row justify-between my-2">
           <a href="/" className="font-bold text-xl">
             <Typography variant="h6" letterSpacing={0}>
               Patient Dashboard

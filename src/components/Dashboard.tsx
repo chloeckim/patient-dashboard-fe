@@ -3,7 +3,6 @@ import {
   Box,
   CircularProgress,
   Container,
-  IconButton,
   SelectChangeEvent,
   Typography,
 } from "@mui/material"
@@ -16,9 +15,8 @@ import {
   GridColDef,
   GridRenderCellParams,
   GridValueFormatterParams,
-  GridValueGetterParams,
 } from "@mui/x-data-grid"
-import { Edit, ListAlt, MoreVert } from "@mui/icons-material"
+import { Edit, MoreVert } from "@mui/icons-material"
 import ColumnModal from "./ColumnModal"
 import { formatDateToString } from "../util/date"
 import AddressCell from "./AddressCell"
@@ -26,6 +24,7 @@ import { StatusChip } from "./StatusChip"
 import {
   AddressType,
   COLUMN_MODAL_NAME,
+  CUSTOM_FIELDS_KEY,
   ColType,
   EDIT_MODAL_NAME,
   RowType,
@@ -34,6 +33,7 @@ import {
 import { EditModal } from "./ EditModal"
 import { TableToolbar } from "./TableToolbar"
 import { stateShorthand } from "../util/address"
+import CustomFieldsCell from "./CustomFieldsCell"
 
 type PropsType = {
   user: User
@@ -108,6 +108,8 @@ export default function Dashboard({ user }: PropsType) {
       {
         field: "actions",
         type: "actions",
+        // headerName: "Edit Row",
+        headerAlign: "center",
         getActions: (params) => [
           <GridActionsCellItem
             icon={<MoreVert />}
@@ -117,8 +119,8 @@ export default function Dashboard({ user }: PropsType) {
             }}
           />,
         ],
+        width: 100,
         align: "center",
-        width: 30,
       },
       {
         field: "fullName",
@@ -203,17 +205,11 @@ export default function Dashboard({ user }: PropsType) {
         width: 130,
       },
       {
-        field: "customForm",
+        field: CUSTOM_FIELDS_KEY,
         headerName: "Custom Fields",
-        type: "boolean",
-        valueGetter: (params) => {
-          return "customFields" in params.row
-        },
-        renderCell: (params) =>
-          params.value === true ? (
-            <IconButton>
-              <ListAlt />
-            </IconButton>
+        renderCell: (param) =>
+          param.value ? (
+            <CustomFieldsCell customFields={param.value} rowId={param.id} />
           ) : (
             <></>
           ),
@@ -235,12 +231,12 @@ export default function Dashboard({ user }: PropsType) {
   }, [customCols])
 
   return loading ? (
-    <div className="flex justify-center items-center mt-10">
+    <div className="flex justify-center items-center">
       <CircularProgress />
     </div>
   ) : (
     <>
-      <Container maxWidth={tableWidth} className="mt-10">
+      <Container maxWidth={tableWidth}>
         <Box sx={{ height: 350, wdith: "100%" }}>
           <DataGrid
             sx={{
@@ -252,6 +248,10 @@ export default function Dashboard({ user }: PropsType) {
               },
               "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within": {
                 outline: "none !important",
+              },
+              "&.MuiDataGrid-root .MuiDataGrid-columnHeaderRow": {},
+              "&.MuiDataGrid-root .MuiDataGrid-row": {
+                // paddingX: 3,
               },
             }}
             rows={rows}

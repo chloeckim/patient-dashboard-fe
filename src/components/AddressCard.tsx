@@ -166,6 +166,8 @@ export function AddressCard({
                 whiteSpace="break-spaces"
                 marginLeft={1}
                 marginTop={1}
+                fontWeight="medium"
+                lineHeight="1.6rem"
               >
                 {stringifyAddress(address)}
               </Typography>

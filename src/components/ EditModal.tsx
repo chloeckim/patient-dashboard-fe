@@ -72,11 +72,20 @@ export function EditModal({
 
   useEffect(() => {
     setOptionalCols(
-      customCols.map(
-        (col: ColType): ColWithValueType => ({
+      customCols.map((col: ColType): ColWithValueType => {
+        if (row !== null && row.customFields !== undefined) {
+          const value = row.customFields[col.name]
+        }
+
+        const value =
+          row !== null && row.customFields !== undefined
+            ? row.customFields[col.name]
+            : undefined
+        return {
           colDef: col,
-        })
-      )
+          value: value,
+        }
+      })
     )
   }, [customCols, row])
 
@@ -163,7 +172,7 @@ export function EditModal({
       for (let i = 0; i < optionalCols.length; i++) {
         const col = optionalCols[i]
         if (col.value !== undefined) {
-          optionals[col.colDef.key] =
+          optionals[col.colDef.name] =
             col.colDef.type === "number" ? Number(col.value) : String(col.value)
         }
       }

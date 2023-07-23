@@ -1,6 +1,6 @@
 import { FmdGood } from "@mui/icons-material"
 import { stateShorthand, stringifyAddress } from "../util/address"
-import { IconButton, Popover, Stack, Typography } from "@mui/material"
+import { Chip, IconButton, Popover, Stack, Typography } from "@mui/material"
 import { GridRowId } from "@mui/x-data-grid"
 import { useState } from "react"
 import { AddressType } from "../interfaces"
@@ -27,7 +27,7 @@ export default function AddressCell({ addressList, rowId }: PropsType) {
     return <></>
   }
   return (
-    <div>
+    <>
       <Stack direction="row" alignItems="center" gap={1}>
         <div
           aria-owns={popoverOpen ? `address-popover-${rowId}` : undefined}
@@ -35,11 +35,9 @@ export default function AddressCell({ addressList, rowId }: PropsType) {
           onMouseEnter={handlePopoverOpen}
           onMouseLeave={handlePopoverClose}
         >
-          {/* <Badge badgeContent={addressList.length} color="default"> */}
           <IconButton color="primary" size="small">
             <FmdGood fontSize="inherit" />
           </IconButton>
-          {/* </Badge> */}
         </div>
         <Stack>
           <Typography variant="body2" fontWeight="medium">
@@ -69,18 +67,39 @@ export default function AddressCell({ addressList, rowId }: PropsType) {
         onClose={handlePopoverClose}
         disableRestoreFocus
       >
-        <div className="flex flex-col px-4 py-3 gap-4">
-          {addressList.map((address: AddressType) => (
-            <Typography
-              whiteSpace="break-spaces"
-              variant="body2"
-              lineHeight="1.5rem"
-            >
-              {stringifyAddress(address)}
-            </Typography>
+        <Stack direction="column" paddingX={3} paddingY={3} spacing={2}>
+          {addressList.map((address: AddressType, index: number) => (
+            <div>
+              {index === 0 && (
+                <Chip
+                  label={
+                    <Typography
+                      variant="body2"
+                      fontWeight="bold"
+                      fontSize="0.7rem"
+                    >
+                      PRIMARY
+                    </Typography>
+                  }
+                  color="primary"
+                  variant="outlined"
+                  size="small"
+                ></Chip>
+              )}
+              <Typography
+                whiteSpace="break-spaces"
+                variant="body2"
+                fontWeight="medium"
+                lineHeight="1.4rem"
+                marginTop={1}
+                marginX={0.5}
+              >
+                {stringifyAddress(address)}
+              </Typography>
+            </div>
           ))}
-        </div>
+        </Stack>
       </Popover>
-    </div>
+    </>
   )
 }

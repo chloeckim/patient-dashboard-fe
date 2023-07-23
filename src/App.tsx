@@ -22,7 +22,11 @@ function App() {
   return (
     <div className="App">
       <NavBar user={user} />
-      {user !== null && <Dashboard user={user} />}
+      {user !== null && (
+        <div>
+          <Dashboard user={user} />
+        </div>
+      )}
     </div>
   )
 }

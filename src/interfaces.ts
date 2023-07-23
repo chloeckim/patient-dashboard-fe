@@ -21,6 +21,7 @@ export type RowType = {
   lastName?: string
   dob?: Timestamp
   addresses?: AddressType[]
+  customFields?: Record<string, string | number>
 }
 
 export type ColType = {

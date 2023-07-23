@@ -73,8 +73,8 @@ export const stringifyAddress = (address: AddressType) => {
   return address.addressLine2 !== undefined && address.addressLine2 !== ""
     ? `${address.addressLine1}\n${address.addressLine2}\n${
         address.city
-      }, ${stateShorthand(address.state)} ${address.zipcode}`
-    : `${address.addressLine1}\n${address.city}, ${stateShorthand(
+      }\n${stateShorthand(address.state)} ${address.zipcode}`
+    : `${address.addressLine1}\n${address.city}\n${stateShorthand(
         address.state
       )} ${address.zipcode}`
 }
