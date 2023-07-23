@@ -1,5 +1,7 @@
 import { Timestamp } from "firebase/firestore"
 
+export type TableWidthType = "sm" | "md" | "lg" | "xl"
+
 export type DocType = {
   uid: string
   status: string
@@ -70,3 +72,6 @@ export const toDoc = (row: RowType): DocType => {
     addresses: row.addresses || [],
   }
 }
+
+export const EDIT_MODAL_NAME = "edit-modal"
+export const COLUMN_MODAL_NAME = "column-modal"

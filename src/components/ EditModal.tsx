@@ -14,6 +14,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  FormControl,
   Grid,
   MenuItem,
   Select,
@@ -266,26 +267,28 @@ export function EditModal({
                 <Grid item xs={6}>
                   <Stack direction="column" gap={1}>
                     <Typography fontWeight="bold">Status</Typography>
-                    <Select
-                      label="status"
-                      name="status"
-                      value={docObj.status}
-                      onChange={handleSelectChange}
-                      size="small"
-                    >
-                      <MenuItem value="Inquiry" divider selected>
-                        <StatusChip status="Inquiry" />
-                      </MenuItem>
-                      <MenuItem value="Onboarding" divider>
-                        <StatusChip status="Onboarding" />
-                      </MenuItem>
-                      <MenuItem value="Active" divider>
-                        <StatusChip status="Active" />
-                      </MenuItem>
-                      <MenuItem value="Churned">
-                        <StatusChip status="Churned" />
-                      </MenuItem>
-                    </Select>
+                    <FormControl>
+                      <Select
+                        label="status"
+                        name="status"
+                        value={docObj.status}
+                        onChange={handleSelectChange}
+                        size="small"
+                      >
+                        <MenuItem value="Inquiry" divider selected>
+                          <StatusChip status="Inquiry" />
+                        </MenuItem>
+                        <MenuItem value="Onboarding" divider>
+                          <StatusChip status="Onboarding" />
+                        </MenuItem>
+                        <MenuItem value="Active" divider>
+                          <StatusChip status="Active" />
+                        </MenuItem>
+                        <MenuItem value="Churned">
+                          <StatusChip status="Churned" />
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
                   </Stack>
                 </Grid>
               </Grid>

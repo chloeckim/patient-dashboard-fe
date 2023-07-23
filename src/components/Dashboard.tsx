@@ -1,5 +1,12 @@
 import { User } from "firebase/auth"
-import { Box, Button, CircularProgress, Container, Stack } from "@mui/material"
+import {
+  Box,
+  CircularProgress,
+  Container,
+  IconButton,
+  SelectChangeEvent,
+  Typography,
+} from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { db } from "../config/firebase"
 import { collection, doc, onSnapshot, query, where } from "firebase/firestore"
@@ -8,20 +15,23 @@ import {
   GridActionsCellItem,
   GridColDef,
   GridRenderCellParams,
-  GridToolbarColumnsButton,
-  GridToolbarContainer,
-  GridToolbarFilterButton,
-  GridToolbarQuickFilter,
   GridValueFormatterParams,
 } from "@mui/x-data-grid"
-import { AddOutlined, Edit, PlaylistAdd, Settings } from "@mui/icons-material"
+import { Edit, ListAlt, MoreVert } from "@mui/icons-material"
 import ColumnModal from "./ColumnModal"
 import { formatDateToString } from "../util/date"
 import AddressCell from "./AddressCell"
 import { StatusChip } from "./StatusChip"
-import { AddressType, ColType, RowType } from "../interfaces"
+import {
+  AddressType,
+  COLUMN_MODAL_NAME,
+  ColType,
+  EDIT_MODAL_NAME,
+  RowType,
+  TableWidthType,
+} from "../interfaces"
 import { EditModal } from "./ EditModal"
-import { populateSampleData } from "../util/sample-data-generator"
+import { TableToolbar } from "./TableToolbar"
 
 type PropsType = {
   user: User
@@ -33,8 +43,8 @@ export default function Dashboard({ user }: PropsType) {
   const [editRow, setEditRow] = useState<RowType | null>(null)
   const [customCols, setCustomCols] = useState<ColType[]>([])
   const [rows, setRows] = useState<RowType[]>([])
-  const editModalName = "edit-modal"
-  const columnModalName = "column-modal"
+  const [tableWidth, setTableWidth] = useState<TableWidthType>("lg")
+
   useEffect(() => {
     const q = query(collection(db, "patients"), where("uid", "==", user.uid))
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -69,63 +79,67 @@ export default function Dashboard({ user }: PropsType) {
 
   const handleOpenEdit = (row: RowType) => {
     setEditRow(row)
-    openModal(editModalName)
+    openModal(EDIT_MODAL_NAME)
+  }
+
+  const handleTableWidtchChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value
+    console.log(value)
+    if (value == "sm" || value == "md" || value == "lg" || value == "xl") {
+      setTableWidth(value)
+    }
   }
 
   const CustomToolbar = () => {
     return (
-      <div className="bg-sky-50 p-4">
-        <GridToolbarContainer className="flex flex-row justify-between">
-          <Stack direction="row" spacing={2}>
-            <GridToolbarColumnsButton />
-            <GridToolbarFilterButton />
-          </Stack>
-          <Stack direction="row" spacing={2}>
-            <Button
-              startIcon={<AddOutlined />}
-              onClick={() => openModal(editModalName)}
-            >
-              Add Patient
-            </Button>
-            <Button
-              startIcon={<Settings />}
-              onClick={() => openModal(columnModalName)}
-            >
-              Custom Columns
-            </Button>
-            <Button
-              startIcon={<PlaylistAdd />}
-              onClick={() => populateSampleData(user)}
-            >
-              Sample Data
-            </Button>
-          </Stack>
-          <GridToolbarQuickFilter />
-        </GridToolbarContainer>
-      </div>
+      <TableToolbar
+        openModal={openModal}
+        user={user}
+        tableWidth={tableWidth}
+        handleTableWidtchChange={handleTableWidtchChange}
+      />
     )
   }
 
   const columns = useMemo<GridColDef[]>(() => {
     return [
       {
+        field: "actions",
+        type: "actions",
+        getActions: (params) => [
+          <GridActionsCellItem
+            icon={<MoreVert />}
+            label="Edit"
+            onClick={() => {
+              handleOpenEdit(params.row)
+            }}
+          />,
+        ],
+        align: "center",
+        width: 30,
+      },
+      {
         field: "fullName",
-        headerName: "Full Name *",
+        headerName: "Full Name",
         headerClassName: "app--table-header-class",
-        // cellClassName
         valueGetter: (params) => {
           return `${params.row.firstName || ""} ${
             params.row.middleName || ""
           } ${params.row.lastName || ""}`
         },
-        width: 150,
+        renderCell: (params: GridRenderCellParams) => (
+          <Typography fontWeight="medium">{`${params.row.firstName || ""} ${
+            params.row.middleName || ""
+          } ${params.row.lastName || ""}`}</Typography>
+        ),
+        width: 200,
       },
-      { field: "firstName", headerName: "First Name *", width: 130 },
+      { field: "firstName", headerName: "First Name", width: 130 },
       { field: "middleName", headerName: "Middle Name", width: 130 },
-      { field: "lastName", headerName: "Last Name *", width: 130 },
+      { field: "lastName", headerName: "Last Name", width: 130 },
       {
         field: "dob",
-        headerName: "Date of Birth *",
+        headerName: "Date of Birth",
         type: "date",
         valueFormatter: (params: GridValueFormatterParams<Date>) => {
           if (params.value === null) {
@@ -133,21 +147,35 @@ export default function Dashboard({ user }: PropsType) {
           }
           return `${formatDateToString(params.value)}`
         },
-        width: 130,
+        width: 200,
       },
       {
         field: "status",
-        headerName: "Status *",
+        headerName: "Status",
         renderCell: (params) => <StatusChip status={params.value} />,
-        width: 140,
+        minWidth: 200,
+        flex: 1,
       },
       {
         field: "addresses",
-        headerName: "Address *",
+        headerName: "Address",
         renderCell: (params: GridRenderCellParams<AddressType[]>) => (
           <AddressCell addressList={params.value} rowId={params.id} />
         ),
-        flex: 1,
+        flex: 2,
+        minWidth: 200,
+      },
+      {
+        field: "customForm",
+        headerName: "Form",
+        renderCell: () => (
+          <IconButton>
+            <ListAlt />
+          </IconButton>
+        ),
+        width: 100,
+        align: "center",
+        headerAlign: "center",
       },
       ...customCols.map((column: ColType) => ({
         field: column.key,
@@ -155,22 +183,6 @@ export default function Dashboard({ user }: PropsType) {
         width: 130,
         type: column.type,
       })),
-      {
-        field: "actions",
-        type: "actions",
-        minWidth: 80,
-        getActions: (params) => [
-          <GridActionsCellItem
-            icon={<Edit />}
-            label="Edit"
-            onClick={() => {
-              handleOpenEdit(params.row)
-            }}
-          />,
-        ],
-        align: "right",
-        flex: 1,
-      },
     ]
   }, [customCols])
 
@@ -180,15 +192,18 @@ export default function Dashboard({ user }: PropsType) {
     </div>
   ) : (
     <>
-      <Container maxWidth="lg" className="mt-10">
+      <Container maxWidth={tableWidth} className="mt-10">
         <Box sx={{ height: 350, wdith: "100%" }}>
           <DataGrid
             sx={{
-              // boxShadow: 2,
-              // border: 2,
-              // borderColor: 'primary.light',
               "& .MuiDataGrid-cell:hover": {
                 color: "primary.main",
+              },
+              "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                outline: "none !important",
+              },
+              "&.MuiDataGrid-root .MuiDataGrid-columnHeader:focus-within": {
+                outline: "none !important",
               },
             }}
             rows={rows}
@@ -210,7 +225,6 @@ export default function Dashboard({ user }: PropsType) {
               },
             }}
             pageSizeOptions={[10, 25, 50, 100]}
-            // checkboxSelection
             disableRowSelectionOnClick
             slots={{ toolbar: CustomToolbar }}
             slotProps={{
@@ -226,13 +240,13 @@ export default function Dashboard({ user }: PropsType) {
         </Box>
       </Container>
       <ColumnModal
-        modalOpen={modalName === columnModalName}
+        modalOpen={modalName === COLUMN_MODAL_NAME}
         closeModalFn={closeModal}
         user={user}
         customCols={customCols}
       />
       <EditModal
-        modalOpen={modalName === editModalName}
+        modalOpen={modalName === EDIT_MODAL_NAME}
         closeModalFn={closeModal}
         row={editRow}
         user={user}

@@ -28,8 +28,6 @@ export function StatusChip({ status }: PropsType) {
         </Typography>
       }
       color={statusBadgeColors[status]}
-      // variant="outlined"
-      // size="small"
     />
   )
 }
