@@ -27,6 +27,11 @@ export type ColType = {
   type: string
 }
 
+export type ColWithValueType = {
+  colDef: ColType
+  value?: string | number
+}
+
 export type AddressType = {
   addressLine1: string
   addressLine2?: string
