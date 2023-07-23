@@ -42,8 +42,10 @@ export default function AddressCell({ addressList, rowId }: PropsType) {
           {/* </Badge> */}
         </div>
         <Stack>
-          <Typography variant="body2">{addressList[0].city}</Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" fontWeight="medium">
+            {addressList[0].city}
+          </Typography>
+          <Typography variant="body2" fontWeight="medium">
             {stateShorthand(addressList[0].state)}{" "}
             {addressList[0].zipcode.slice(0, 5)}
           </Typography>

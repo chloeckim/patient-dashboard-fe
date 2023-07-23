@@ -43,6 +43,7 @@ export default function SampleDataGenerator({ user }: PropsType) {
         uid: user.uid,
         status: statusOptions[i % 4],
         firstName: "",
+        middleName: "",
         lastName: "",
         dob: Timestamp.fromDate(
           new Date(Math.floor(Math.random() * 1689996053000))
@@ -71,7 +72,6 @@ export default function SampleDataGenerator({ user }: PropsType) {
           data.forEach((value: string, index: number) => {
             const parsedAddress = parseAddress(value)
             if (index < docs.length && parsedAddress !== null) {
-              parsedAddress.primary = true
               docs[index].addresses = [parsedAddress]
             }
           })

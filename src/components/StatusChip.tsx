@@ -23,7 +23,7 @@ export function StatusChip({ status }: PropsType) {
   return (
     <Chip
       label={
-        <Typography variant="button" fontSize="0.8rem">
+        <Typography variant="button" fontWeight="medium">
           {status}
         </Typography>
       }

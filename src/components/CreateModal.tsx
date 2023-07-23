@@ -43,7 +43,6 @@ const initialValues = {
 }
 
 const initialAddress: AddressType = {
-  primary: true,
   addressLine1: "",
   addressLine2: "",
   city: "",

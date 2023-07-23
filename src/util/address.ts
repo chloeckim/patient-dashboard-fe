@@ -70,9 +70,13 @@ export const parseAddress = (addressString: string): AddressType | null => {
 }
 
 export const stringifyAddress = (address: AddressType) => {
-  return `${address.addressLine1}\n${address.addressLine2}\n${
-    address.city
-  }\n${stateShorthand(address.state)} ${address.zipcode}`
+  return address.addressLine2 != undefined
+    ? `${address.addressLine1}\n${address.addressLine2}\n${
+        address.city
+      }, ${stateShorthand(address.state)} ${address.zipcode}`
+    : `${address.addressLine1}\n${address.city}, ${stateShorthand(
+        address.state
+      )} ${address.zipcode}`
 }
 
 // Simplified and no edge cases considered.

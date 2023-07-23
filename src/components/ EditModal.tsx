@@ -1,5 +1,13 @@
 import { User } from "firebase/auth"
-import { ColType, DocType } from "../interfaces"
+import {
+  AddressType,
+  ColType,
+  DocType,
+  INITIAL_ADDRESS,
+  INITIAL_DOC,
+  RowType,
+  toDoc,
+} from "../interfaces"
 import {
   Button,
   Dialog,
@@ -16,57 +24,128 @@ import {
 import { DatePicker } from "@mui/x-date-pickers"
 import dayjs, { Dayjs } from "dayjs"
 import { StatusChip } from "./StatusChip"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AddOutlined } from "@mui/icons-material"
+import { AddressCard } from "./AddressCard"
+import { addDoc, collection, doc, setDoc } from "firebase/firestore"
+import { db } from "../config/firebase"
 
 type PropsType = {
   modalOpen: boolean
   closeModalFn: () => void
-  actionType: string
+  row: RowType | null
   user: User
-  initialDoc: DocType
   customCols: ColType[]
 }
 
 export function EditModal({
   modalOpen,
   closeModalFn,
-  actionType,
+  row,
   user,
-  initialDoc,
   customCols,
 }: PropsType) {
-  const [doc, setDoc] = useState<DocType>(initialDoc)
+  const [docObj, setDocObj] = useState<DocType>(INITIAL_DOC)
   const [dob, setDob] = useState<Dayjs | null>(null)
+
+  useEffect(() => {
+    if (row === null) {
+      setDocObj(INITIAL_DOC)
+      setDob(null)
+    } else {
+      setDocObj(toDoc(row))
+      if (row.dob) {
+        setDob(dayjs(row.dob.valueOf(), "x"))
+      }
+    }
+  }, [row])
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     const { name, value } = event.target
-    setDoc({
-      ...doc,
+    setDocObj({
+      ...docObj,
       [name]: value,
     })
   }
 
   const handleSelectChange = (event: SelectChangeEvent): void => {
     const { name, value } = event.target
-    console.log(name, value)
-    setDoc({
-      ...doc,
+    setDocObj({
+      ...docObj,
       [name]: value,
     })
   }
 
   const onModalClose = () => {
     closeModalFn()
-    setDoc(initialDoc)
+    setDocObj(INITIAL_DOC)
+  }
+
+  const handleAddressEdit = (editing: boolean, index: number): void => {
+    setDocObj({
+      ...docObj,
+      addresses: docObj.addresses.map((address: AddressType, index_: number) =>
+        index === index_ ? { ...address, editing: editing } : address
+      ),
+    })
+  }
+
+  const setAddress = (newAddress: AddressType | null, index: number): void => {
+    if (newAddress === null) {
+      // Remove address.
+      setDocObj({
+        ...docObj,
+        addresses: docObj.addresses.filter(
+          (value: AddressType, index_: number) => index !== index_
+        ),
+      })
+    } else {
+      setDocObj({
+        ...docObj,
+        addresses: docObj.addresses.map(
+          (address: AddressType, index_: number) =>
+            index === index_ ? { ...newAddress, editing: undefined } : address
+        ),
+      })
+    }
+  }
+
+  const addAddress = (): void => {
+    setDocObj({
+      ...docObj,
+      addresses: [...docObj.addresses, INITIAL_ADDRESS],
+    })
+  }
+
+  const handleSubmit = async () => {
+    if (row === null) {
+      // Create a new doc
+      await addDoc(collection(db, "patients"), docObj)
+        .then((docRef) => {
+          console.log("Document written with ID: ", docRef.id)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    } else {
+      // Overwrite a doc
+      await setDoc(doc(db, "patients", row.id), docObj)
+        .then(() => {
+          console.log("Document written with ID: ", row.id)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
+    console.log(docObj)
   }
 
   return (
-    <Dialog open={modalOpen} onClose={onModalClose} fullWidth>
-      {actionType === "create" ? (
-        <DialogTitle>Add a new patient</DialogTitle>
+    <Dialog open={modalOpen} onClose={onModalClose} maxWidth="md" fullWidth>
+      {row === null ? (
+        <DialogTitle>Add a patient</DialogTitle>
       ) : (
         <DialogTitle>Edit patient info</DialogTitle>
       )}
@@ -74,13 +153,13 @@ export function EditModal({
         <Stack direction="column" gap={3} marginTop={1}>
           {/* Name stack */}
           <Stack direction="column" gap={1}>
-            <Typography fontWeight="bold">Patient Name</Typography>
+            <Typography fontWeight="bold">Name</Typography>
             <Stack direction="row" gap={1}>
               <TextField
                 required
                 name="firstName"
                 label="First Name"
-                value={doc.firstName}
+                value={docObj.firstName}
                 onChange={handleInputChange}
                 size="small"
                 className="grow"
@@ -88,7 +167,7 @@ export function EditModal({
               <TextField
                 name="middleName"
                 label="Middle Name"
-                value={doc.middleName}
+                value={docObj.middleName}
                 onChange={handleInputChange}
                 size="small"
                 className="grow-0 min-w-fit"
@@ -97,7 +176,7 @@ export function EditModal({
                 required
                 name="lastName"
                 label="Last Name"
-                value={doc.lastName}
+                value={docObj.lastName}
                 onChange={handleInputChange}
                 size="small"
                 className="grow"
@@ -124,7 +203,7 @@ export function EditModal({
                 <Select
                   label="status"
                   name="status"
-                  value={doc.status}
+                  value={docObj.status}
                   onChange={handleSelectChange}
                   size="small"
                 >
@@ -147,13 +226,49 @@ export function EditModal({
 
           {/* Address stack  */}
           <Stack direction="column" gap={1}>
-            <Typography fontWeight="bold">Address</Typography>
+            <Typography fontWeight="bold">
+              {docObj.addresses.length > 1 ? "Addresses" : "Address"}
+            </Typography>
+            <Grid container spacing={2}>
+              {docObj.addresses.map((address: AddressType, index: number) => (
+                <Grid item xs={12} key={`address-card-${index}`}>
+                  <AddressCard
+                    address={address}
+                    index={index}
+                    handleAddressEdit={handleAddressEdit}
+                    setAddress={setAddress}
+                  />
+                </Grid>
+              ))}
+            </Grid>
             <Button
               startIcon={<AddOutlined />}
-              size="small"
               className=" self-start"
+              onClick={addAddress}
             >
               Add address
+            </Button>
+          </Stack>
+
+          {/* Action buttons stack  */}
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            gap={2}
+            marginTop={1}
+          >
+            <Button size="large" onClick={onModalClose}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => {
+                handleSubmit()
+                onModalClose()
+              }}
+            >
+              Submit
             </Button>
           </Stack>
         </Stack>

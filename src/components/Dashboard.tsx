@@ -23,47 +23,86 @@ import {
 } from "@mui/x-data-grid"
 import { Delete, Edit } from "@mui/icons-material"
 import ColumnModal from "./ColumnModal"
-import CreateModal from "./CreateModal"
 import SampleDataGenerator from "./SampleDataGenerator"
 import { formatDateToString } from "../util/date"
 import AddressCell from "./AddressCell"
 import { StatusChip } from "./StatusChip"
-import { AddressType, ColType, DocType } from "../interfaces"
+import { AddressType, ColType, RowType } from "../interfaces"
 import { EditModal } from "./ EditModal"
 
 type PropsType = {
   user: User
 }
 
-const initialDoc: DocType = {
-  uid: "",
-  status: "Inquiry",
-  firstName: "Chloe",
-  lastName: "Kim",
-  addresses: [
-    // {
-    //   addressLine1: "",
-    //   city: "",
-    //   state: "",
-    //   zipcode: "",
-    // },
-  ],
-}
-
 export default function Dashboard({ user }: PropsType) {
   const [loading, setLoading] = useState<boolean>(true)
-  const [editing, setEditing] = useState<boolean>(false)
-
   const [modalName, setModalName] = useState<string>("")
+  const [editRow, setEditRow] = useState<RowType | null>(null)
+  const [customCols, setCustomCols] = useState<ColType[]>([])
+  const [rows, setRows] = useState<RowType[]>([])
+  const editModalName = "edit-modal"
+  const columnModalName = "column-modal"
+  useEffect(() => {
+    const q = query(collection(db, "patients"), where("uid", "==", user.uid))
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      setRows(
+        querySnapshot.docs.map(
+          (doc): RowType => ({
+            ...doc.data(),
+            dob: doc.data().dob?.toDate(),
+            id: doc.id,
+          })
+        )
+      )
+      setLoading(false)
+    })
+    const unsubscribeCols = onSnapshot(doc(db, "columns", user.uid), (doc) => {
+      const newAdditionalCols: ColType[] = [...doc.data()?.columns]
+      setCustomCols(newAdditionalCols)
+    })
+    return () => {
+      unsubscribe()
+      unsubscribeCols()
+    }
+  }, [])
+
   const openModal = (thisModalName: string) => {
     setModalName(thisModalName)
   }
   const closeModal = () => {
+    setEditRow(null)
     setModalName("")
   }
 
-  const [customCols, setCustomCols] = useState<ColType[]>([])
-  const [rows, setRows] = useState([{}])
+  const handleOpenEdit = (row: RowType) => {
+    setEditRow(row)
+    openModal(editModalName)
+  }
+
+  const handleDeleteRow = async (docId: string) => {
+    // TODO: Maybe add an alert dialog since this is a final action.
+    await deleteDoc(doc(db, "patients", docId))
+      .then(() => {
+        console.log("Deleted", docId)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
+  const CustomToolbar = () => {
+    return (
+      <div className="bg-sky-50 p-4">
+        <GridToolbarContainer className="flex flex-row justify-between">
+          <div>
+            <GridToolbarColumnsButton />
+            <GridToolbarFilterButton />
+          </div>
+          <GridToolbarQuickFilter />
+        </GridToolbarContainer>
+      </div>
+    )
+  }
 
   const columns = useMemo<GridColDef[]>(() => {
     return [
@@ -122,15 +161,16 @@ export default function Dashboard({ user }: PropsType) {
           <GridActionsCellItem
             icon={<Edit />}
             label="Edit"
-            onClick={() => {}}
+            onClick={() => {
+              handleOpenEdit(params.row)
+            }}
           />,
           <GridActionsCellItem
             icon={<Delete />}
             label="Delete"
             onClick={() => {
-              handleDeletePatient(params.row.id)
+              handleDeleteRow(params.row.id)
             }}
-            disabled={editing}
           />,
         ],
         align: "right",
@@ -138,54 +178,6 @@ export default function Dashboard({ user }: PropsType) {
       },
     ]
   }, [customCols])
-
-  const CustomToolbar = () => {
-    return (
-      <div className="bg-sky-50 p-4">
-        <GridToolbarContainer className="flex flex-row justify-between">
-          <div>
-            <GridToolbarColumnsButton />
-            <GridToolbarFilterButton />
-          </div>
-          <GridToolbarQuickFilter />
-        </GridToolbarContainer>
-      </div>
-    )
-  }
-  const handleDeletePatient = async (docId: string) => {
-    // TODO: Maybe add an alert dialog since this is a final action.
-    setEditing(true)
-    await deleteDoc(doc(db, "patients", docId))
-      .then(() => {
-        console.log("Deleted", docId)
-        setEditing(false)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
-
-  useEffect(() => {
-    const q = query(collection(db, "patients"), where("uid", "==", user.uid))
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      setRows(
-        querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-          dob: doc.data().dob?.toDate(),
-          id: doc.id,
-        }))
-      )
-      setLoading(false)
-    })
-    const unsubscribeCols = onSnapshot(doc(db, "columns", user.uid), (doc) => {
-      const newAdditionalCols: ColType[] = [...doc.data()?.columns]
-      setCustomCols(newAdditionalCols)
-    })
-    return () => {
-      unsubscribe()
-      unsubscribeCols()
-    }
-  }, [])
 
   return loading ? (
     <div className="flex justify-center items-center mt-10">
@@ -195,14 +187,13 @@ export default function Dashboard({ user }: PropsType) {
     <>
       <Container maxWidth="lg" className="mt-10">
         <div className="flex flex-row gap-4 justify-end mb-4">
-          <Button onClick={() => openModal("create-modal")}>
+          <Button onClick={() => openModal(editModalName)}>
             Add a new patient
           </Button>
-          <Button onClick={() => openModal("column-modal")}>
+          <Button onClick={() => openModal(columnModalName)}>
             Manage custom columns
           </Button>
           <SampleDataGenerator user={user} />
-          <Button onClick={() => openModal("edit-modal")}>Test</Button>
         </div>
         <Box sx={{ height: 350, wdith: "100%" }}>
           <DataGrid
@@ -248,24 +239,17 @@ export default function Dashboard({ user }: PropsType) {
           ></DataGrid>
         </Box>
       </Container>
-      <CreateModal
-        modalOpen={modalName === "create-modal"}
-        closeModalFn={closeModal}
-        user={user}
-        customCols={customCols}
-      />
       <ColumnModal
-        modalOpen={modalName === "column-modal"}
+        modalOpen={modalName === columnModalName}
         closeModalFn={closeModal}
         user={user}
         customCols={customCols}
       />
       <EditModal
-        modalOpen={modalName === "edit-modal"}
+        modalOpen={modalName === editModalName}
         closeModalFn={closeModal}
-        actionType="create"
+        row={editRow}
         user={user}
-        initialDoc={initialDoc}
         customCols={customCols}
       />
     </>
