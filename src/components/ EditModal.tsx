@@ -28,7 +28,7 @@ import { StatusChip } from "./StatusChip"
 import { useEffect, useState } from "react"
 import { AddOutlined } from "@mui/icons-material"
 import { AddressCard } from "./AddressCard"
-import { addDoc, collection, doc, setDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, setDoc } from "firebase/firestore"
 import { db } from "../config/firebase"
 
 type PropsType = {
@@ -78,6 +78,11 @@ export function EditModal({
     )
   }, [customCols, row])
 
+  const onModalClose = () => {
+    closeModalFn()
+    setDocObj(INITIAL_DOC)
+  }
+
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -94,11 +99,6 @@ export function EditModal({
       ...docObj,
       [name]: value,
     })
-  }
-
-  const onModalClose = () => {
-    closeModalFn()
-    setDocObj(INITIAL_DOC)
   }
 
   const handleAddressEdit = (editing: boolean, index: number): void => {
@@ -145,6 +145,15 @@ export function EditModal({
     })
   }
 
+  const handleOptionalFieldChange = (key: string, value: string | number) => {
+    setOptionalCols(
+      optionalCols.map(
+        (col: ColWithValueType): ColWithValueType =>
+          col.colDef.key === key ? { ...col, value: value } : col
+      )
+    )
+  }
+
   const handleSubmit = async () => {
     let combinedDocObj = { ...docObj }
 
@@ -182,13 +191,16 @@ export function EditModal({
     }
   }
 
-  const handleOptionalFieldChange = (key: string, value: string | number) => {
-    setOptionalCols(
-      optionalCols.map(
-        (col: ColWithValueType): ColWithValueType =>
-          col.colDef.key === key ? { ...col, value: value } : col
-      )
-    )
+  const handleDeleteRecord = async () => {
+    if (row !== null) {
+      await deleteDoc(doc(db, "patients", row.id))
+        .then(() => {
+          console.log("Deleted")
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+    }
   }
 
   return (
@@ -341,6 +353,18 @@ export function EditModal({
 
         {/* Action buttons stack  */}
         <Stack direction="row" justifyContent="flex-end" gap={2} marginTop={4}>
+          {row !== null && (
+            <Button
+              size="large"
+              color="error"
+              onClick={() => {
+                handleDeleteRecord()
+                onModalClose()
+              }}
+            >
+              Delete Record
+            </Button>
+          )}
           <Button size="large" onClick={onModalClose}>
             Cancel
           </Button>

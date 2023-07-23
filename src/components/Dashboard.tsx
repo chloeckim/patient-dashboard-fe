@@ -1,15 +1,8 @@
 import { User } from "firebase/auth"
-import { Box, Button, CircularProgress, Container } from "@mui/material"
+import { Box, Button, CircularProgress, Container, Stack } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
 import { db } from "../config/firebase"
-import {
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  query,
-  where,
-} from "firebase/firestore"
+import { collection, doc, onSnapshot, query, where } from "firebase/firestore"
 import {
   DataGrid,
   GridActionsCellItem,
@@ -21,14 +14,14 @@ import {
   GridToolbarQuickFilter,
   GridValueFormatterParams,
 } from "@mui/x-data-grid"
-import { Delete, Edit } from "@mui/icons-material"
+import { AddOutlined, Edit, PlaylistAdd, Settings } from "@mui/icons-material"
 import ColumnModal from "./ColumnModal"
-import SampleDataGenerator from "./SampleDataGenerator"
 import { formatDateToString } from "../util/date"
 import AddressCell from "./AddressCell"
 import { StatusChip } from "./StatusChip"
 import { AddressType, ColType, RowType } from "../interfaces"
 import { EditModal } from "./ EditModal"
+import { populateSampleData } from "../util/sample-data-generator"
 
 type PropsType = {
   user: User
@@ -79,25 +72,34 @@ export default function Dashboard({ user }: PropsType) {
     openModal(editModalName)
   }
 
-  const handleDeleteRow = async (docId: string) => {
-    // TODO: Maybe add an alert dialog since this is a final action.
-    await deleteDoc(doc(db, "patients", docId))
-      .then(() => {
-        console.log("Deleted", docId)
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
-
   const CustomToolbar = () => {
     return (
       <div className="bg-sky-50 p-4">
         <GridToolbarContainer className="flex flex-row justify-between">
-          <div>
+          <Stack direction="row" spacing={2}>
             <GridToolbarColumnsButton />
             <GridToolbarFilterButton />
-          </div>
+          </Stack>
+          <Stack direction="row" spacing={2}>
+            <Button
+              startIcon={<AddOutlined />}
+              onClick={() => openModal(editModalName)}
+            >
+              Add Patient
+            </Button>
+            <Button
+              startIcon={<Settings />}
+              onClick={() => openModal(columnModalName)}
+            >
+              Custom Columns
+            </Button>
+            <Button
+              startIcon={<PlaylistAdd />}
+              onClick={() => populateSampleData(user)}
+            >
+              Sample Data
+            </Button>
+          </Stack>
           <GridToolbarQuickFilter />
         </GridToolbarContainer>
       </div>
@@ -165,13 +167,6 @@ export default function Dashboard({ user }: PropsType) {
               handleOpenEdit(params.row)
             }}
           />,
-          <GridActionsCellItem
-            icon={<Delete />}
-            label="Delete"
-            onClick={() => {
-              handleDeleteRow(params.row.id)
-            }}
-          />,
         ],
         align: "right",
         flex: 1,
@@ -186,15 +181,6 @@ export default function Dashboard({ user }: PropsType) {
   ) : (
     <>
       <Container maxWidth="lg" className="mt-10">
-        <div className="flex flex-row gap-4 justify-end mb-4">
-          <Button onClick={() => openModal(editModalName)}>
-            Add a new patient
-          </Button>
-          <Button onClick={() => openModal(columnModalName)}>
-            Manage custom columns
-          </Button>
-          <SampleDataGenerator user={user} />
-        </div>
         <Box sx={{ height: 350, wdith: "100%" }}>
           <DataGrid
             sx={{
