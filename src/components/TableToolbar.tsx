@@ -1,14 +1,5 @@
 import { AddOutlined, Settings, PlaylistAdd } from "@mui/icons-material"
-import {
-  Stack,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-  Typography,
-} from "@mui/material"
+import { Stack, Button } from "@mui/material"
 import {
   GridToolbarContainer,
   GridToolbarColumnsButton,
@@ -17,25 +8,14 @@ import {
 } from "@mui/x-data-grid"
 import { populateSampleData } from "../util/sample-data-generator"
 import { User } from "firebase/auth"
-import {
-  COLUMN_MODAL_NAME,
-  EDIT_MODAL_NAME,
-  TableWidthType,
-} from "../interfaces"
+import { COLUMN_MODAL_NAME, EDIT_MODAL_NAME } from "../interfaces"
 
 type PropsType = {
   openModal: (thisModalName: string) => void
   user: User
-  tableWidth: TableWidthType
-  handleTableWidtchChange: (event: SelectChangeEvent<string>) => void
 }
 
-export function TableToolbar({
-  openModal,
-  user,
-  tableWidth,
-  handleTableWidtchChange,
-}: PropsType) {
+export function TableToolbar({ openModal, user }: PropsType) {
   return (
     <div className="bg-sky-50 p-4">
       <GridToolbarContainer className="flex flex-row justify-between">

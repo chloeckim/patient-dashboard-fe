@@ -1,13 +1,6 @@
-import { ListAlt, SpeakerNotes } from "@mui/icons-material"
-import {
-  Box,
-  Grid,
-  IconButton,
-  Popover,
-  Stack,
-  Typography,
-} from "@mui/material"
-import { GridRow, GridRowId } from "@mui/x-data-grid"
+import { SpeakerNotes } from "@mui/icons-material"
+import { Box, Grid, IconButton, Popover, Typography } from "@mui/material"
+import { GridRowId } from "@mui/x-data-grid"
 import { useState } from "react"
 
 type PropsType = {

@@ -4,7 +4,6 @@ import {
   CircularProgress,
   Container,
   FormControl,
-  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -21,7 +20,7 @@ import {
   GridRenderCellParams,
   GridValueFormatterParams,
 } from "@mui/x-data-grid"
-import { Edit, MoreVert } from "@mui/icons-material"
+import { MoreVert } from "@mui/icons-material"
 import ColumnModal from "./ColumnModal"
 import { formatDateToString } from "../util/date"
 import AddressCell from "./AddressCell"
@@ -89,7 +88,7 @@ export default function Dashboard({ user }: PropsType) {
     openModal(EDIT_MODAL_NAME)
   }
 
-  const handleTableWidtchChange = (event: SelectChangeEvent<string>) => {
+  const handleTableWidthChange = (event: SelectChangeEvent<string>) => {
     const value = event.target.value
     console.log(value)
     if (value == "sm" || value == "md" || value == "lg" || value == "xl") {
@@ -98,14 +97,7 @@ export default function Dashboard({ user }: PropsType) {
   }
 
   const CustomToolbar = () => {
-    return (
-      <TableToolbar
-        openModal={openModal}
-        user={user}
-        tableWidth={tableWidth}
-        handleTableWidtchChange={handleTableWidtchChange}
-      />
-    )
+    return <TableToolbar openModal={openModal} user={user} />
   }
 
   const columns = useMemo<GridColDef[]>(() => {
@@ -259,7 +251,7 @@ export default function Dashboard({ user }: PropsType) {
                 id="table-width-select"
                 value={tableWidth}
                 label="Table width"
-                onChange={handleTableWidtchChange}
+                onChange={handleTableWidthChange}
                 disableUnderline
                 autoWidth
               >
