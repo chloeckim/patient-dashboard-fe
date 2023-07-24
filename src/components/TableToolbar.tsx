@@ -44,7 +44,7 @@ export function TableToolbar({
           <GridToolbarColumnsButton />
           <GridToolbarFilterButton />
         </Stack>
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" justifyContent="flex-end" spacing={2}>
           <Button
             startIcon={<AddOutlined />}
             onClick={() => openModal(EDIT_MODAL_NAME)}
@@ -64,23 +64,6 @@ export function TableToolbar({
             Sample Data
           </Button>
         </Stack>
-        <FormControl>
-          <InputLabel id="table-width-select-label">Table width</InputLabel>
-          <Select
-            size="small"
-            variant="standard"
-            labelId="table-width-select-label"
-            id="table-width-select"
-            value={tableWidth}
-            label="Table width"
-            onChange={handleTableWidtchChange}
-          >
-            <MenuItem value="sm">small</MenuItem>
-            <MenuItem value="md">medium</MenuItem>
-            <MenuItem value="lg">large</MenuItem>
-            <MenuItem value="xl">extra large</MenuItem>
-          </Select>
-        </FormControl>
       </GridToolbarContainer>
     </div>
   )

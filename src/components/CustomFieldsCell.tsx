@@ -63,7 +63,7 @@ export default function CustomFieldsCell({ customFields, rowId }: PropsType) {
             container
             paddingX={3}
             paddingY={3}
-            spacing={1}
+            columnSpacing={2}
             rowSpacing={1}
             maxWidth="sm"
           >

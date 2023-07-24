@@ -3,7 +3,12 @@ import {
   Box,
   CircularProgress,
   Container,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
   SelectChangeEvent,
+  Stack,
   Typography,
 } from "@mui/material"
 import { useEffect, useMemo, useState } from "react"
@@ -237,7 +242,44 @@ export default function Dashboard({ user }: PropsType) {
   ) : (
     <>
       <Container maxWidth={tableWidth}>
-        <Box sx={{ height: 350, wdith: "100%" }}>
+        <Stack direction="row" justifyContent="flex-end" marginBottom={1}>
+          <Stack
+            direction="row"
+            alignItems="flex-start"
+            spacing={3}
+            className=" min-w-min"
+          >
+            <Typography>Table width: </Typography>
+            <FormControl>
+              {/* <InputLabel id="table-width-select-label">Table width</InputLabel> */}
+              <Select
+                size="small"
+                variant="standard"
+                labelId="table-width-select-label"
+                id="table-width-select"
+                value={tableWidth}
+                label="Table width"
+                onChange={handleTableWidtchChange}
+                disableUnderline
+                autoWidth
+              >
+                <MenuItem value="sm">
+                  <Typography>small</Typography>
+                </MenuItem>
+                <MenuItem value="md">
+                  <Typography>medium</Typography>
+                </MenuItem>
+                <MenuItem value="lg">
+                  <Typography>large</Typography>
+                </MenuItem>
+                <MenuItem value="xl">
+                  <Typography>extra large</Typography>
+                </MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+        </Stack>
+        <Box sx={{ height: "100%", wdith: "100%" }}>
           <DataGrid
             sx={{
               "& .MuiDataGrid-cell:hover": {
