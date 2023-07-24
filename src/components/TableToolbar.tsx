@@ -52,16 +52,16 @@ export function TableToolbar({
             Add Patient
           </Button>
           <Button
-            startIcon={<Settings />}
-            onClick={() => openModal(COLUMN_MODAL_NAME)}
-          >
-            Custom Columns
-          </Button>
-          <Button
             startIcon={<PlaylistAdd />}
             onClick={() => populateSampleData(user)}
           >
             Sample Data
+          </Button>
+          <Button
+            startIcon={<Settings />}
+            onClick={() => openModal(COLUMN_MODAL_NAME)}
+          >
+            Custom Fields
           </Button>
         </Stack>
       </GridToolbarContainer>
