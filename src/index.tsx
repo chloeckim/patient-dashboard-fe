@@ -6,11 +6,18 @@ import "@fontsource/roboto/400.css"
 import "@fontsource/roboto/500.css"
 import "@fontsource/roboto/700.css"
 import App from "./App"
-import { ThemeProvider, createTheme, CssBaseline } from "@mui/material"
+import {
+  ThemeProvider,
+  createTheme,
+  CssBaseline,
+  ThemeOptions,
+} from "@mui/material"
 import { LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 
-const defaultTheme = createTheme()
+export const themeOptions: ThemeOptions = {}
+
+const defaultTheme = createTheme(themeOptions)
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(

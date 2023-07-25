@@ -1,5 +1,5 @@
 import { AddOutlined, Settings, PlaylistAdd } from "@mui/icons-material"
-import { Stack, Button, Popover, Typography } from "@mui/material"
+import { Stack, Button, Popover, Typography, useTheme } from "@mui/material"
 import {
   GridToolbarContainer,
   GridToolbarColumnsButton,
@@ -25,6 +25,7 @@ export function TableToolbar({ openModal, user }: PropsType) {
     setAnchorEl(null)
   }
   const popoverOpen = Boolean(anchorEl)
+  const theme = useTheme()
 
   return (
     <div className="bg-sky-50 p-4">

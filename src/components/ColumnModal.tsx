@@ -105,7 +105,7 @@ export default function ColumnModal({
       )
         return
     }
-    await setDoc(doc(db, "columns", user.uid), { columns: manageCols })
+    setDoc(doc(db, "columns", user.uid), { columns: manageCols })
       .then(() => {
         console.log("Columns updated!")
       })

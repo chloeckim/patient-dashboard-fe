@@ -224,7 +224,7 @@ export function EditModal({
       })
     }
     if (row === null) {
-      await addDoc(collection(db, "patients"), combinedDocObj)
+      addDoc(collection(db, "patients"), combinedDocObj)
         .then((docRef) => {
           console.log("Document written with ID: ", docRef.id)
         })
@@ -232,7 +232,7 @@ export function EditModal({
           console.error(error)
         })
     } else {
-      await setDoc(doc(db, "patients", row.id), combinedDocObj)
+      setDoc(doc(db, "patients", row.id), combinedDocObj)
         .then(() => {
           console.log("Document written with ID: ", row.id)
         })
@@ -246,7 +246,7 @@ export function EditModal({
   const handleDeleteRecord = async () => {
     closeModalFn()
     if (row !== null) {
-      await deleteDoc(doc(db, "patients", row.id))
+      deleteDoc(doc(db, "patients", row.id))
         .then(() => {
           console.log("Deleted")
         })

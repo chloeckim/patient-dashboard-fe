@@ -5,21 +5,29 @@ import {
   Container,
   Toolbar,
   Typography,
+  useTheme,
 } from "@mui/material"
 import { signInWithGoogle, logOut } from "../auth/auth-google"
 import { User } from "firebase/auth"
+import { Google } from "@mui/icons-material"
 
 type PropsType = {
   user: User | null
 }
 
 export default function NavBar({ user }: PropsType) {
+  const theme = useTheme()
   return (
     <AppBar position="static" color="transparent" elevation={0}>
       <Container maxWidth="lg">
         <Toolbar disableGutters className="flex flex-row justify-between my-2">
-          <a href="/" className="font-bold text-xl">
-            <Typography variant="h6" letterSpacing={0}>
+          <a href="/">
+            <Typography
+              variant="h5"
+              fontWeight="medium"
+              color="inherit"
+              letterSpacing={0}
+            >
               Patient Dashboard
             </Typography>
           </a>
@@ -28,6 +36,8 @@ export default function NavBar({ user }: PropsType) {
               color="inherit"
               variant="outlined"
               onClick={signInWithGoogle}
+              startIcon={<Google />}
+              size="large"
             >
               Sign in with Google
             </Button>

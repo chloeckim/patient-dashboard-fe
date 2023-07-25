@@ -79,7 +79,7 @@ export const populateSampleData = async (user: User) => {
     batch.set(docRef, document)
   })
 
-  await batch
+  batch
     .commit()
     .then(() => {
       console.log("batch update successful")
