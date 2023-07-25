@@ -12,15 +12,12 @@ type PropsType = {
 
 export default function AddressCell({ addressList, rowId }: PropsType) {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
   }
-
   const handlePopoverClose = () => {
     setAnchorEl(null)
   }
-
   const popoverOpen = Boolean(anchorEl)
 
   if (addressList.length === 0) {

@@ -67,15 +67,21 @@ export function EditModal({
     )
   )
   const [validating, setValidating] = useState<boolean>(false)
-  const validated: boolean =
+  let validated: boolean =
     docObj.firstName !== "" &&
     docObj.lastName !== "" &&
     dob !== null &&
-    docObj.addresses.length > 0 &&
-    docObj.addresses[0].addressLine1 !== "" &&
-    docObj.addresses[0].city !== "" &&
-    docObj.addresses[0].state !== "" &&
-    docObj.addresses[0].zipcode !== ""
+    docObj.addresses.length > 0
+
+  for (let i = 0; i < docObj.addresses.length; i++) {
+    if (!validated) break
+    validated =
+      validated &&
+      docObj.addresses[i].addressLine1 !== "" &&
+      docObj.addresses[i].city !== "" &&
+      docObj.addresses[i].state !== "" &&
+      docObj.addresses[i].zipcode !== ""
+  }
 
   const resetState = () => {
     setValidating(false)
