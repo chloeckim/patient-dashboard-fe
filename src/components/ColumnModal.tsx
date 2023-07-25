@@ -34,6 +34,7 @@ export default function ColumnModal({
   customCols,
 }: PropsType) {
   const [manageCols, setManageCols] = useState<ColType[]>([...customCols])
+  const [validating, setValidating] = useState<boolean>(false)
 
   const resetCols = () => {
     setManageCols([...customCols])
@@ -95,7 +96,15 @@ export default function ColumnModal({
   }
 
   const handleSubmit = async () => {
-    // TODO: validate data
+    setValidating(true)
+    for (let i = 0; i < manageCols.length; i++) {
+      if (
+        manageCols[i].key === "" ||
+        manageCols[i].name === "" ||
+        manageCols[i].type === ""
+      )
+        return
+    }
     await setDoc(doc(db, "columns", user.uid), { columns: manageCols })
       .then(() => {
         console.log("Columns updated!")
@@ -103,10 +112,22 @@ export default function ColumnModal({
       .catch((error) => {
         console.error(error)
       })
+    handleCloseModal()
+  }
+
+  const handleCloseModal = () => {
+    closeModalFn()
+    setValidating(false)
+  }
+
+  const handleDiscard = () => {
+    closeModalFn()
+    resetCols()
+    setValidating(false)
   }
 
   return (
-    <Dialog open={modalOpen} onClose={closeModalFn} maxWidth="md" fullWidth>
+    <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth="md" fullWidth>
       <DialogTitle>
         <Typography variant="h6" gutterBottom>
           Manage custom fields
@@ -144,6 +165,10 @@ export default function ColumnModal({
                     <Typography fontWeight="bold">Name</Typography>
                     <TextField
                       value={column.name}
+                      error={validating && column.name === ""}
+                      helperText={
+                        validating && column.name === "" && "Required"
+                      }
                       size="small"
                       fullWidth
                       onChange={(
@@ -159,6 +184,7 @@ export default function ColumnModal({
                     <Typography fontWeight="bold">Type</Typography>
                     <FormControl fullWidth>
                       <Select
+                        error={validating && column.type === ""}
                         label="Field type"
                         value={column.type}
                         size="small"
@@ -188,25 +214,10 @@ export default function ColumnModal({
             gap={2}
             marginTop={2}
           >
-            <Button
-              size="large"
-              onClick={() => {
-                closeModalFn()
-                resetCols()
-              }}
-            >
-              Discard Changes
+            <Button size="large" onClick={handleDiscard}>
+              Discard
             </Button>
-            <Button
-              variant="contained"
-              size="large"
-              // href="/"
-              onClick={() => {
-                // Send back to the backend first
-                closeModalFn()
-                handleSubmit()
-              }}
-            >
+            <Button variant="contained" size="large" onClick={handleSubmit}>
               Update Fields
             </Button>
           </Stack>
