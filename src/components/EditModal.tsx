@@ -23,6 +23,7 @@ import {
   Stack,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material"
 import { DatePicker } from "@mui/x-date-pickers"
 import dayjs, { Dayjs } from "dayjs"
@@ -55,6 +56,7 @@ export function EditModal({
   user,
   customCols,
 }: PropsType) {
+  const theme = useTheme()
   const [docObj, setDocObj] = useState<DocType>(INITIAL_DOC)
   const [dob, setDob] = useState<Dayjs | null>(null)
   const [optionalCols, setOptionalCols] = useState<ColWithValueType[]>(
@@ -64,8 +66,19 @@ export function EditModal({
       })
     )
   )
+  const [validating, setValidating] = useState<boolean>(false)
+  const validated: boolean =
+    docObj.firstName !== "" &&
+    docObj.lastName !== "" &&
+    dob !== null &&
+    docObj.addresses.length > 0 &&
+    docObj.addresses[0].addressLine1 !== "" &&
+    docObj.addresses[0].city !== "" &&
+    docObj.addresses[0].state !== "" &&
+    docObj.addresses[0].zipcode !== ""
 
-  useEffect(() => {
+  const resetState = () => {
+    setValidating(false)
     if (row === null) {
       setDocObj(INITIAL_DOC)
       setDob(null)
@@ -75,9 +88,6 @@ export function EditModal({
         setDob(dayjs(row.dob.valueOf(), "x"))
       }
     }
-  }, [row])
-
-  useEffect(() => {
     setOptionalCols(
       customCols.map((col: ColType): ColWithValueType => {
         if (row !== null && row.customFields !== undefined) {
@@ -94,11 +104,15 @@ export function EditModal({
         }
       })
     )
-  }, [customCols, row])
+  }
 
-  const onModalClose = () => {
+  useEffect(() => {
+    resetState()
+  }, [row, customCols, user])
+
+  const handleDiscardChanges = () => {
     closeModalFn()
-    setDocObj(INITIAL_DOC)
+    resetState()
   }
 
   const handleInputChange = (
@@ -138,6 +152,8 @@ export function EditModal({
         ),
       })
     } else {
+      // Validate first.
+
       setDocObj({
         ...docObj,
         addresses: docObj.addresses.map(
@@ -173,7 +189,11 @@ export function EditModal({
   }
 
   const handleSubmit = async () => {
-    // TODO: Data validation.
+    setValidating(true)
+    if (!validated) {
+      return
+    }
+
     let combinedDocObj = {
       ...docObj,
       uid: user.uid,
@@ -197,9 +217,6 @@ export function EditModal({
         writable: true,
       })
     }
-
-    console.log(combinedDocObj)
-
     if (row === null) {
       await addDoc(collection(db, "patients"), combinedDocObj)
         .then((docRef) => {
@@ -217,9 +234,11 @@ export function EditModal({
           console.error(error)
         })
     }
+    closeModalFn()
   }
 
   const handleDeleteRecord = async () => {
+    closeModalFn()
     if (row !== null) {
       await deleteDoc(doc(db, "patients", row.id))
         .then(() => {
@@ -232,7 +251,12 @@ export function EditModal({
   }
 
   return (
-    <Dialog open={modalOpen} onClose={onModalClose} maxWidth="lg" fullWidth>
+    <Dialog
+      open={modalOpen}
+      onClose={handleDiscardChanges}
+      maxWidth="lg"
+      fullWidth
+    >
       {row === null ? (
         <DialogTitle>Add a patient</DialogTitle>
       ) : (
@@ -251,6 +275,10 @@ export function EditModal({
                 <Stack direction="row" gap={1}>
                   <TextField
                     required
+                    error={validating && docObj.firstName === ""}
+                    helperText={
+                      validating && docObj.firstName === "" && "Required"
+                    }
                     name="firstName"
                     label="First Name"
                     value={docObj.firstName}
@@ -268,6 +296,10 @@ export function EditModal({
                   />
                   <TextField
                     required
+                    error={validating && docObj.lastName === ""}
+                    helperText={
+                      validating && docObj.lastName === "" && "Required"
+                    }
                     name="lastName"
                     label="Last Name"
                     value={docObj.lastName}
@@ -286,7 +318,20 @@ export function EditModal({
                     <DatePicker
                       value={dob}
                       onChange={(date) => setDob(date)}
-                      maxDate={dayjs()}
+                      slotProps={{
+                        textField: {
+                          helperText: validating && dob === null && (
+                            <Typography
+                              variant="caption"
+                              color={theme.palette.error.dark}
+                            >
+                              Required
+                            </Typography>
+                          ),
+                          size: "small",
+                        },
+                      }}
+                      disableFuture
                     />
                   </Stack>
                 </Grid>
@@ -333,7 +378,9 @@ export function EditModal({
                           address={address}
                           index={index}
                           handleAddressEdit={handleAddressEdit}
-                          setAddress={setAddress}
+                          docObj={docObj}
+                          setDocObj={setDocObj}
+                          validating={validating}
                         />
                       </Grid>
                     )
@@ -384,28 +431,14 @@ export function EditModal({
         {/* Action buttons stack  */}
         <Stack direction="row" justifyContent="flex-end" gap={2} marginTop={4}>
           {row !== null && (
-            <Button
-              size="large"
-              color="error"
-              onClick={() => {
-                onModalClose()
-                handleDeleteRecord()
-              }}
-            >
+            <Button size="large" color="error" onClick={handleDeleteRecord}>
               Delete Record
             </Button>
           )}
-          <Button size="large" onClick={onModalClose}>
-            Cancel
+          <Button size="large" onClick={handleDiscardChanges}>
+            Discard changes
           </Button>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => {
-              onModalClose()
-              handleSubmit()
-            }}
-          >
+          <Button variant="contained" size="large" onClick={handleSubmit}>
             Submit
           </Button>
         </Stack>

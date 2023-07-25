@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material"
-import { AddressType } from "../interfaces"
+import { AddressType, DocType } from "../interfaces"
 import { stringifyAddress } from "../util/address"
 import React, { useEffect, useState } from "react"
 
@@ -16,24 +16,61 @@ type PropsType = {
   address: AddressType
   index: number
   handleAddressEdit: (eiditing: boolean, index: number) => void
-  setAddress: (newAddress: AddressType | null, index: number) => void
+  docObj: DocType
+  setDocObj: React.Dispatch<React.SetStateAction<DocType>>
+  validating: boolean
 }
 
 export function AddressCard({
   address,
   index,
   handleAddressEdit,
-  setAddress,
+  docObj,
+  setDocObj,
+  validating,
 }: PropsType) {
   const [newAddress, setNewAddress] = useState<AddressType>(address)
+  const [addressValidating, setAddressValidating] = useState<boolean>(false)
+  const validatingTotal: boolean = validating || addressValidating
+  const validated: boolean =
+    docObj.addresses[index].addressLine1 !== "" &&
+    docObj.addresses[index].city !== "" &&
+    docObj.addresses[index].state !== "" &&
+    docObj.addresses[index].zipcode !== ""
 
   useEffect(() => {
     setNewAddress(address)
   }, [address])
 
+  const handleDoneEdit = () => {
+    setAddressValidating(true)
+    if (!validated) return
+    handleAddressEdit(false, index)
+    setAddressValidating(false)
+  }
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
-    setNewAddress({ ...newAddress, [name]: value })
+    setDocObj({
+      ...docObj,
+      addresses: docObj.addresses.map((address: AddressType, index_: number) =>
+        index === index_
+          ? {
+              ...address,
+              [name]: value,
+            }
+          : address
+      ),
+    })
+  }
+
+  const handleDeleteAddress = () => {
+    setDocObj({
+      ...docObj,
+      addresses: docObj.addresses?.filter(
+        (value: AddressType, index_: number) => index !== index_
+      ),
+    })
   }
 
   return (
@@ -57,6 +94,10 @@ export function AddressCard({
             )}
             <TextField
               required
+              error={validatingTotal && newAddress.addressLine1 === ""}
+              helperText={
+                validatingTotal && newAddress.addressLine1 === "" && "Required"
+              }
               name="addressLine1"
               label="Address Line 1"
               value={newAddress.addressLine1}
@@ -74,6 +115,10 @@ export function AddressCard({
               <Grid item xs={6}>
                 <TextField
                   required
+                  error={validatingTotal && newAddress.city === ""}
+                  helperText={
+                    validatingTotal && newAddress.city === "" && "Required"
+                  }
                   name="city"
                   label="City"
                   value={newAddress.city}
@@ -85,6 +130,10 @@ export function AddressCard({
               <Grid item xs={2}>
                 <TextField
                   required
+                  error={validatingTotal && newAddress.state === ""}
+                  helperText={
+                    validatingTotal && newAddress.state === "" && "Required"
+                  }
                   name="state"
                   label="State"
                   value={newAddress.state}
@@ -96,6 +145,10 @@ export function AddressCard({
               <Grid item xs={4}>
                 <TextField
                   required
+                  error={validatingTotal && newAddress.zipcode === ""}
+                  helperText={
+                    validatingTotal && newAddress.zipcode === "" && "Required"
+                  }
                   name="zipcode"
                   label="Zipcode"
                   value={newAddress.zipcode}
@@ -117,26 +170,12 @@ export function AddressCard({
                 <Button
                   color="error"
                   size="small"
-                  onClick={() => setAddress(null, index)}
+                  onClick={handleDeleteAddress}
                 >
                   Remove address
                 </Button>
               )}
-              <Button
-                size="small"
-                onClick={() => {
-                  handleAddressEdit(false, index)
-                  setNewAddress(address)
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                size="small"
-                onClick={() => {
-                  setAddress(newAddress, index)
-                }}
-              >
+              <Button size="small" onClick={handleDoneEdit}>
                 Done
               </Button>
             </Stack>
