@@ -376,8 +376,8 @@ export function EditModal({
               size="large"
               color="error"
               onClick={() => {
-                handleDeleteRecord()
                 onModalClose()
+                handleDeleteRecord()
               }}
             >
               Delete Record
@@ -390,8 +390,8 @@ export function EditModal({
             variant="contained"
             size="large"
             onClick={() => {
-              handleSubmit()
               onModalClose()
+              handleSubmit()
             }}
           >
             Submit
