@@ -34,7 +34,7 @@ import {
   RowType,
   TableWidthType,
 } from "../interfaces"
-import { EditModal } from "./ EditModal"
+import { EditModal } from "./EditModal"
 import { TableToolbar } from "./TableToolbar"
 import { stateShorthand } from "../util/address"
 import CustomFieldsCell from "./CustomFieldsCell"
