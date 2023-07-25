@@ -30,7 +30,14 @@ import { StatusChip } from "./StatusChip"
 import { useEffect, useState } from "react"
 import { AddOutlined } from "@mui/icons-material"
 import { AddressCard } from "./AddressCard"
-import { addDoc, collection, deleteDoc, doc, setDoc } from "firebase/firestore"
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  setDoc,
+} from "firebase/firestore"
 import { db } from "../config/firebase"
 
 type PropsType = {
@@ -166,7 +173,12 @@ export function EditModal({
   }
 
   const handleSubmit = async () => {
-    let combinedDocObj = { ...docObj }
+    // TODO: Data validation.
+    let combinedDocObj = {
+      ...docObj,
+      uid: user.uid,
+      dob: dob === null ? new Timestamp(0, 0) : new Timestamp(dob.unix(), 0),
+    }
     if (optionalCols.length > 0) {
       let optionals: Record<string, string | number> = {}
       for (let i = 0; i < optionalCols.length; i++) {
